@@ -14,6 +14,7 @@ contract Loan {
 	}
 
 	enum Collateral {
+		UNDEFINED,
 		NONE,	
 		LEGAL,
 		DEPOSIT
@@ -27,37 +28,53 @@ contract Loan {
 	uint public scale;
 	uint public precision;
 	uint public duration;
+	uint public paymentPeriod;
 	Collateral public collateral;
 	LoanState public loanState;
 
 	uint public repayment;
 	uint public repaymentAccount;
-	uint public paymentPeriod;
 	uint public latest_payment_timestamp;
 
-	constructor (
-		address _giver, 
-		uint _basis, 
-		uint _interestScaled, 
-		uint _interestReciprocal, 
-		uint _scale,
-		uint _precision,
-		uint _duration, 
-		Collateral _collateral,
-		uint _paymentPeriod
-	) {
-		giver = _giver;
-		basis = _basis;
-		interestScaled = _interestScaled;
-		interestReciprocal = _interestReciprocal;
-		scale = _scale;
-		precision = _precision;
-		duration = _duration;
-		collateral = _collateral;
-
-		paymentPeriod = _paymentPeriod;
-
+	constructor () payable {
+		giver = msg.sender;
+		basis = msg.value;
 		loanState = LoanState.OFFER;
+	}
+
+	function setInterestScaled(uint _interestScaled) public {
+		require(interestScaled == 0);
+		interestScaled = _interestScaled;
+	}
+
+	function setInterestReciprocal(uint _interestReciprocal) public {
+		require(interestReciprocal == 0);
+		interestReciprocal = _interestReciprocal;
+	}
+
+	function setScale(uint _scale) public {
+		require(scale == 0);
+		scale = _scale;
+	}
+
+	function setPrecision(uint _precision) public {
+		require(precision == 0);
+		precision = _precision;
+	}
+
+	function setDuration(uint _duration) public {
+		require(duration == 0);
+		duration = _duration;
+	}
+
+	function setPaymentPeriod(uint _paymentPeriod) public {
+		require(paymentPeriod == 0);
+		paymentPeriod = _paymentPeriod;
+	}
+
+	function setCollateral(Collateral _collateral) public {
+		require(collateral == Collateral.UNDEFINED);
+		collateral = _collateral;
 	}
 
 	function startLoan(address _taker) public {
