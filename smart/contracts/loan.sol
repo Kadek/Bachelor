@@ -21,7 +21,7 @@ contract Loan {
 	}
 
 	address giver;
-	address taker;
+	address public taker;
 	uint public basis;
 	uint public interestScaled;
 	uint public interestReciprocal;
@@ -77,15 +77,15 @@ contract Loan {
 		collateral = _collateral;
 	}
 
-	function startLoan(address _taker) public {
+	function startLoan() public {
 		require(loanState == LoanState.OFFER);
 		
-		taker = _taker;
+		taker = msg.sender;
 		calculateRepayments();
 		scheduleRepayments();
-		loanState == LoanState.STARTED;
+		loanState = LoanState.STARTED;
 
-		transferMoney();
+		//transferMoney();
 	}
 
 	function transferMoney() public payable{
@@ -94,7 +94,7 @@ contract Loan {
 
 	function calculateRepayments() private {		
 		uint compound_interest = exp();
-		repayment = (compound_interest.mul(interestScaled).mul(basis)).div(compound_interest.sub(scale));
+		repayment = (compound_interest.mul(interestScaled).mul(basis)).div(compound_interest.sub(scale)).div(scale);
 	}
 
 	function exp() private constant returns (uint){

@@ -5,7 +5,7 @@ contract('Loan', function(accounts){
     return Loan.deployed().then(function(instance){
       return instance.basis.call();
     }).then(function(basis) {
-      assert.equal(basis.valueOf(), 100, "Default basis is not 100");
+      assert.equal(basis.valueOf(), 1000, "Default basis is not 1000");
     });
   });
 
@@ -47,7 +47,7 @@ contract('Loan', function(accounts){
   }
 
   functionNames = ["interestScaled", "interestReciprocal", "scale", "precision", "duration", "paymentPeriod", "collateral"];
-  functionValues = [100, 100, 100, 100, 100, 100, 1];
+  functionValues = [2000000000, 5, 10000000000, 8, 7, 30, 1];
   for( var i = 0; i < functionNames.length; i++){
 
     functionName = functionNames[i]; 
@@ -57,6 +57,40 @@ contract('Loan', function(accounts){
     testSetters(functionName, capFunctionName, functionValue);
   };
 
+  it("should start the loan properly", function() {
+    return Loan.deployed().then(function(instance){
+      loan = instance;
+      return loan.startLoan();
+    }).then(function() {
+      return loan.loanState.call();
+    }).then(function(loanState) {
+      assert.equal(loanState.valueOf(), 1, "Started loanState is not STARTED");
+      return loan.taker.call();
+    }).then(function(taker) {
+      assert.equal(taker, accounts[0], "Loan taker is not set to the caller of function");
+      return loan.repayment.call();
+    }).then(function(repayment) {
+      assert.equal(repayment.valueOf(), 277, "Repayments are not calculated properly");
+      return loan.latest_payment_timestamp.call();
+    }).then(function(latest_payment_timestamp) {
+      assert.equal(latest_payment_timestamp.valueOf(), web3.eth.getBlock(web3.eth.blockNumber).timestamp, "Latest payment timestamp is not set properly");
+    });
+  });
+
+
+  it("should not start the loan second time", function() {
+    return Loan.deployed().then(function(instance){
+      return instance.loanStart();
+    }).catch(function(error) {
+        test = true;
+    }).then(function(value){
+      if(test){
+        assert.equal(1,1,"");
+      }else{
+        assert.equal(1,0, "Loan is started twice");
+      }
+    });
+  });
 });
 
 function capitalizeFirstLetter(string) {

@@ -4,6 +4,6 @@ module.exports = function(deployer, network, accounts) {
 	// deployment steps   
 	deployer.deploy(Loan, {
 			from: accounts[0],
-			value: 100
+			value: 1000
 	}); 
 }
