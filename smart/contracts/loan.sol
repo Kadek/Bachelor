@@ -34,12 +34,14 @@ contract Loan {
 
 	uint public repayment;
 	uint public repaymentAccount;
-	uint public latest_payment_timestamp;
+	uint public latestPaymentTimestamp;
+	uint public paymentCount;
 
 	constructor () payable {
 		giver = msg.sender;
 		basis = msg.value;
 		loanState = LoanState.OFFER;
+		paymentCount = 0;
 	}
 
 	function setInterestScaled(uint _interestScaled) public {
@@ -85,10 +87,11 @@ contract Loan {
 		scheduleRepayments();
 		loanState = LoanState.STARTED;
 
-		//transferMoney();
+		transferMoney();
 	}
 
 	function transferMoney() public payable{
+		require(loanState == LoanState.STARTED);
 		taker.transfer(basis);
 	}
 
@@ -110,15 +113,17 @@ contract Loan {
 	}
 
 	function scheduleRepayments() private {
-		latest_payment_timestamp = now;
+		latestPaymentTimestamp = now;
 	}
 
 	function consumeRepayment() public payable {
 		require(msg.sender == giver);
-		require(now.sub(latest_payment_timestamp) > paymentPeriod);
+		require(now.sub(latestPaymentTimestamp) > paymentPeriod);
+		require(paymentCount < duration);
 		giver.transfer(repayment);
 		repaymentAccount = repaymentAccount.sub(repayment);
-		latest_payment_timestamp = latest_payment_timestamp.add(paymentPeriod);
+		latestPaymentTimestamp = latestPaymentTimestamp.add(paymentPeriod);
+		paymentCount++;
 	}
 
 	function loadRepaymentAccount() public payable{

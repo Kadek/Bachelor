@@ -1,19 +1,19 @@
 var Loan = artifacts.require("Loan");
+var BigNumber = require("bignumber.js");
 
 contract('Loan', function(accounts){
-  it("should initialize with default basis", function() {
+  it("should initialize with default values basis", function() {
     return Loan.deployed().then(function(instance){
-      return instance.basis.call();
+      loan = instance;
+      return loan.basis.call();
     }).then(function(basis) {
       assert.equal(basis.valueOf(), 1000, "Default basis is not 1000");
-    });
-  });
-
-  it("should initialize with default LoanState", function() {
-    return Loan.deployed().then(function(instance){
-      return instance.loanState.call();
+      return loan.loanState.call();
     }).then(function(loanState) {
       assert.equal(loanState.valueOf(), 0, "Default LoanState is not OFFER");
+      return loan.paymentCount.call();
+    }).then(function(paymentCount) {
+      assert.equal(paymentCount.valueOf(), 0, "Default paymentCount is not 0");
     });
   });
 
@@ -57,11 +57,27 @@ contract('Loan', function(accounts){
     testSetters(functionName, capFunctionName, functionValue);
   };
 
+  it("should not transfer money without starting loan", function() {
+    return Loan.deployed().then(function(instance){
+      return instance.transferMoney();
+    }).catch(function(error) {
+        test = true;
+    }).then(function(value){
+      if(test){
+        assert.equal(1,1,"");
+      }else{
+        assert.equal(1,0, "Money is sent without starting loan");
+      }
+    });
+  });
+
   it("should start the loan properly", function() {
     return Loan.deployed().then(function(instance){
       loan = instance;
+      balanceBefore = new BigNumber(web3.eth.getBalance(accounts[0]).valueOf());
       return loan.startLoan();
-    }).then(function() {
+    }).then(function(transaction) {
+      startLoanTransaction = transaction;
       return loan.loanState.call();
     }).then(function(loanState) {
       assert.equal(loanState.valueOf(), 1, "Started loanState is not STARTED");
@@ -71,9 +87,16 @@ contract('Loan', function(accounts){
       return loan.repayment.call();
     }).then(function(repayment) {
       assert.equal(repayment.valueOf(), 277, "Repayments are not calculated properly");
-      return loan.latest_payment_timestamp.call();
-    }).then(function(latest_payment_timestamp) {
-      assert.equal(latest_payment_timestamp.valueOf(), web3.eth.getBlock(web3.eth.blockNumber).timestamp, "Latest payment timestamp is not set properly");
+      return loan.latestPaymentTimestamp.call();
+    }).then(function(latestPaymentTimestamp) {
+      assert.equal(latestPaymentTimestamp.valueOf(), web3.eth.getBlock(web3.eth.blockNumber).timestamp, "Latest payment timestamp is not set properly");
+      return web3.eth.getTransaction(startLoanTransaction.tx);
+    }).then(function(transaction) {
+      var balanceAfter = new BigNumber(web3.eth.getBalance(accounts[0]).valueOf());
+      var gasPrice = new BigNumber(transaction.gasPrice);
+      var gasUsed = new BigNumber(startLoanTransaction.receipt.gasUsed);
+      var gasCost = gasPrice.times(gasUsed);
+      assert.equal(balanceAfter.plus(gasCost).minus(balanceBefore) , 1000, "Money is not transfered or improper amount is being sent");
     });
   });
 
@@ -88,6 +111,42 @@ contract('Loan', function(accounts){
         assert.equal(1,1,"");
       }else{
         assert.equal(1,0, "Loan is started twice");
+      }
+    });
+  });
+
+
+  it("should not cancel started loan", function() {
+    return Loan.deployed().then(function(instance){
+      loan = instance;
+      return loan.cancelLoanOffer();
+    }).catch(function(error) {
+      test = true;
+    }).then(function(value){
+      if(test){
+        assert.equal(1,1,"");
+      }else{
+        assert.equal(1,0, "Started loan gets cancelled");
+      }
+    });
+  });
+});
+
+
+contract('Loan', function(accounts){
+  it("should cancel offered loan", function() {
+    return Loan.deployed().then(function(instance){
+      loan = instance;
+      return loan.cancelLoanOffer();
+    }).then(function(){
+      return loan.taker.call();
+    }).catch(function(error) {
+      test = true;
+    }).then(function(value){
+      if(test){
+        assert.equal(1,1,"");
+      }else{
+        assert.equal(1,0, "Cancelled loan did not get destroyed");
       }
     });
   });
