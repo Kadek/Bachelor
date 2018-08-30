@@ -46,8 +46,10 @@ contract('Loan', function(accounts){
     });
   }
 
+  var duration = 7;
+  var paymentPeriod = 30;
   functionNames = ["interestScaled", "interestReciprocal", "scale", "precision", "duration", "paymentPeriod", "collateral"];
-  functionValues = [2000000000, 5, 10000000000, 8, 7, 30, 1];
+  functionValues = [2000000000, 5, 10000000000, 8, duration, paymentPeriod, 1];
   for( var i = 0; i < functionNames.length; i++){
 
     functionName = functionNames[i]; 
@@ -59,6 +61,7 @@ contract('Loan', function(accounts){
 
   it("should not transfer money without starting loan", function() {
     return Loan.deployed().then(function(instance){
+        test = false;
       return instance.transferMoney();
     }).catch(function(error) {
         test = true;
@@ -103,6 +106,7 @@ contract('Loan', function(accounts){
 
   it("should not start the loan second time", function() {
     return Loan.deployed().then(function(instance){
+        test = false;
       return instance.loanStart();
     }).catch(function(error) {
         test = true;
@@ -119,6 +123,7 @@ contract('Loan', function(accounts){
   it("should not cancel started loan", function() {
     return Loan.deployed().then(function(instance){
       loan = instance;
+      test = false;
       return loan.cancelLoanOffer();
     }).catch(function(error) {
       test = true;
@@ -130,8 +135,72 @@ contract('Loan', function(accounts){
       }
     });
   });
-});
 
+  for(var i = 0; i < duration; i++){
+    it("should allow " + (i+1) + "th repayment", function() {
+      return Loan.deployed().then(function(instance){
+        loan = instance;
+        return loan.repayment.call();
+      }).then(function(repaymentLocal){
+        repaymentGlobal = repaymentLocal;
+        return loan.loadRepaymentAccount({value: repaymentGlobal});
+      }).then(function(){
+        return passTime(paymentPeriod);
+      }).then(function(){
+        return loan.repaymentAccount.call();
+      }).then(function(repaymentAccount){
+        assert.equal(repaymentGlobal.valueOf(), repaymentAccount.valueOf(), "Account not filled with repayment");
+        return loan.consumeRepayment({value: repaymentGlobal});
+      }).then(function(){
+        return loan.repaymentAccount.call();
+      }).then(function(repaymentAccount){
+        assert.equal(0, repaymentAccount, "Account not emptied of repayment");
+        return loan.repaymentAccount.call();
+      });
+    });
+  }
+
+  it("should not allow " + (duration+1) + "th repayment", function() {
+    return Loan.deployed().then(function(instance){
+      loan = instance;
+      test = false;
+      return loan.repayment.call();
+    }).then(function(repaymentLocal){
+      repaymentGlobal = repaymentLocal;
+      return loan.loadRepaymentAccount({value: repaymentGlobal});
+    }).then(function(){
+      return passTime(paymentPeriod);
+    }).then(function(){
+      return loan.repaymentAccount.call();
+    }).then(function(repaymentAccount){
+      return loan.consumeRepayment({value: repaymentGlobal});
+    }).catch(function(error) {
+      test = true;
+    }).then(function(value){
+      if(test){
+        assert.equal(1,1,"");
+      }else{
+        assert.equal(1,0, "Repaid loan still claims funds");
+      }
+    });
+  });
+
+  function passTime(paymentPeriod){
+    web3.currentProvider.send({
+      jsonrpc: "2.0", 
+      method: "evm_increaseTime", 
+      params: [paymentPeriod], 
+      id: 0
+    });
+    web3.currentProvider.send({
+      jsonrpc: "2.0", 
+      method: "evm_mine", 
+      params: [], 
+      id: 0
+    });
+  };
+
+});
 
 contract('Loan', function(accounts){
   it("should cancel offered loan", function() {
