@@ -7,12 +7,6 @@ contract Loan {
 
 	using SafeMath for uint;
 
-	enum LoanState {
-		OFFER,
-		STARTED,
-		CANCELLED
-	}
-
 	enum Collateral {
 		UNDEFINED,
 		NONE,	
@@ -30,7 +24,6 @@ contract Loan {
 	uint public duration;
 	uint public paymentPeriod;
 	Collateral public collateral;
-	LoanState public loanState;
 
 	uint public repayment;
 	uint public repaymentAccount;
@@ -40,7 +33,6 @@ contract Loan {
 	constructor () payable {
 		giver = msg.sender;
 		basis = msg.value;
-		loanState = LoanState.OFFER;
 		paymentCount = 0;
 	}
 
@@ -80,18 +72,15 @@ contract Loan {
 	}
 
 	function startLoan() public {
-		require(loanState == LoanState.OFFER);
 		
 		taker = msg.sender;
 		calculateRepayments();
 		scheduleRepayments();
-		loanState = LoanState.STARTED;
 
 		transferMoney();
 	}
 
 	function transferMoney() public payable{
-		require(loanState == LoanState.STARTED);
 		taker.transfer(basis);
 	}
 
@@ -128,13 +117,5 @@ contract Loan {
 
 	function loadRepaymentAccount() public payable{
 		repaymentAccount = repaymentAccount.add(msg.value);
-	}
-
-	function cancelLoanOffer() public {
-		require(msg.sender == giver);
-
-		require(loanState == LoanState.OFFER);
-		loanState = LoanState.CANCELLED;
-		selfdestruct(giver);
 	}
 }

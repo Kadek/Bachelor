@@ -1,52 +1,46 @@
-package engine;
+package engine.Entity;
 
+import engine.Preloan;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.tx.TransactionManager;
         
-public class LoanInfo {
+public class PreloanInfo extends BlockchainCommunicator {
     
     private static final Logger log = LoggerFactory.getLogger(LoanGiver.class);
     
     private final String contractAddress;
     private final Web3j web3j;
-    private final Loan loan;
+    private final Preloan preLoan;
 
-    public LoanInfo(final String contractAddress) throws IOException {
+    public PreloanInfo(final String contractAddress) throws IOException{
+        super("0x0");
         this.contractAddress = contractAddress;
         this.web3j = connectToDefaultNetwork();
-        this.loan = loadSmartContract();
+        this.preLoan = loadPreloan();
     }
     
-    private Web3j connectToDefaultNetwork() throws IOException{
-        Web3j web3jLocal = Web3j.build(new HttpService()); 
-        log.info("Connected to Ethereum client version");
-        return web3jLocal;
-    }
-    
-    private Loan loadSmartContract(){
+    private Preloan loadPreloan(){
         
         TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, contractAddress);
         
-        Loan loanLocal = new Loan(
+        Preloan loanLocal = Preloan.load(
                 contractAddress, web3j,
                 transactionManager, 
                 ManagedTransaction.GAS_PRICE, 
                 Contract.GAS_LIMIT);
-        log.info("Loan loaded");
+        log.info("Preloan loaded");
         return loanLocal;
     }
     
-    public String getLoanBasis() throws InterruptedException, ExecutionException{
-        return loan.basis().sendAsync().get().toString();
+    public String getPreloanBasis() throws InterruptedException, ExecutionException{
+        return preLoan.basis().sendAsync().get().toString();
     }
 
 }

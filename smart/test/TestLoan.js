@@ -8,9 +8,6 @@ contract('Loan', function(accounts){
       return loan.basis.call();
     }).then(function(basis) {
       assert.equal(basis.valueOf(), 1000, "Default basis is not 1000");
-      return loan.loanState.call();
-    }).then(function(loanState) {
-      assert.equal(loanState.valueOf(), 0, "Default LoanState is not OFFER");
       return loan.paymentCount.call();
     }).then(function(paymentCount) {
       assert.equal(paymentCount.valueOf(), 0, "Default paymentCount is not 0");
@@ -59,21 +56,6 @@ contract('Loan', function(accounts){
     testSetters(functionName, capFunctionName, functionValue);
   };
 
-  it("should not transfer money without starting loan", function() {
-    return Loan.deployed().then(function(instance){
-        test = false;
-      return instance.transferMoney();
-    }).catch(function(error) {
-        test = true;
-    }).then(function(value){
-      if(test){
-        assert.equal(1,1,"");
-      }else{
-        assert.equal(1,0, "Money is sent without starting loan");
-      }
-    });
-  });
-
   it("should start the loan properly", function() {
     return Loan.deployed().then(function(instance){
       loan = instance;
@@ -81,9 +63,6 @@ contract('Loan', function(accounts){
       return loan.startLoan();
     }).then(function(transaction) {
       startLoanTransaction = transaction;
-      return loan.loanState.call();
-    }).then(function(loanState) {
-      assert.equal(loanState.valueOf(), 1, "Started loanState is not STARTED");
       return loan.taker.call();
     }).then(function(taker) {
       assert.equal(taker, accounts[0], "Loan taker is not set to the caller of function");
