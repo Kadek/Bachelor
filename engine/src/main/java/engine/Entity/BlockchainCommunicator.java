@@ -16,7 +16,7 @@ public class BlockchainCommunicator {
     
     private static final Logger log = LoggerFactory.getLogger(LoanGiver.class);
     
-    protected BlockchainCommunicator(String privateKey){
+    protected BlockchainCommunicator(final String privateKey){
         this.privateKey = privateKey;
         this.precision = "8";
         this.scale = "10000000000";

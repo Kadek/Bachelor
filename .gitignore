@@ -40,3 +40,12 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+
+# network stuff
+/private_network_data/
+/smart/build/
+/smart/compiled_contracts/
+/smart/data/
+/smart/node_modules/
+/smart/solidity-windows/
+/help/
