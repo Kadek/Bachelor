@@ -1,6 +1,7 @@
 var Ledger = artifacts.require("Ledger");
+var Preloan = artifacts.require("Preloan");
 
-contract('Ledger', function(accounts){
+contract('Ledger unit test', function(accounts){
   var refAddresses = [
     "0x32be343b94f860124dc4fee278fdcbd38c102d88",
     "0x32be343b94f860124dc4fee278fdcbd38c102d89",
@@ -32,11 +33,15 @@ contract('Ledger', function(accounts){
     }).then(function() {
       return ledger.addAsk(refAddresses[2]);
     }).then(function() {
-      return ledger.getAskAddresses.call();
-    }).then(function(addresses) {
-      for(var i = 0 ; i < addresses.length; i++){
-        assert.equal(refAddresses[i], addresses[i], "Address " + addresses[i] + " instead of " + refAddresses[i]);
-      }
+      return ledger.getAskAddressAtRow(0);
+    }).then(function(address) {
+      assert.equal(refAddresses[0], address, "Address " + address + " instead of " + refAddresses[0]);
+      return ledger.getAskAddressAtRow(1);
+    }).then(function(address) {
+      assert.equal(refAddresses[1], address, "Address " + address + " instead of " + refAddresses[1]);
+      return ledger.getAskAddressAtRow(2);
+    }).then(function(address) {
+      assert.equal(refAddresses[2], address, "Address " + address + " instead of " + refAddresses[2]);
     });
   });
 
@@ -45,9 +50,9 @@ contract('Ledger', function(accounts){
       ledger = instance;
       return ledger.deleteAsk(0);
     }).then(function() {
-      return ledger.getAskAddresses.call();
-    }).then(function(addresses) {
-      assert.equal(addresses.length, 2, "Addresses length after delete is " + addresses.length + " instead of 2");
+      return ledger.getAskAddressCount();
+    }).then(function(addressesLength) {
+      assert.equal(addressesLength, 2, "Addresses length after delete is " + addressesLength + " instead of 2");
     });
   });
 
@@ -76,11 +81,15 @@ contract('Ledger', function(accounts){
     }).then(function() {
       return ledger.addBid(refAddresses[2]);
     }).then(function() {
-      return ledger.getBidAddresses.call();
-    }).then(function(addresses) {
-      for(var i = 0 ; i < addresses.length; i++){
-        assert.equal(refAddresses[i], addresses[i], "Address " + addresses[i] + " instead of " + refAddresses[i]);
-      }
+      return ledger.getBidAddressAtRow(0);
+    }).then(function(address) {
+      assert.equal(refAddresses[0], address, "Address " + address + " instead of " + refAddresses[0]);
+      return ledger.getBidAddressAtRow(1);
+    }).then(function(address) {
+      assert.equal(refAddresses[1], address, "Address " + address + " instead of " + refAddresses[1]);
+      return ledger.getBidAddressAtRow(2);
+    }).then(function(address) {
+      assert.equal(refAddresses[2], address, "Address " + address + " instead of " + refAddresses[2]);
     });
   });
 
@@ -89,9 +98,30 @@ contract('Ledger', function(accounts){
       ledger = instance;
       return ledger.deleteBid(0);
     }).then(function() {
-      return ledger.getBidAddresses.call();
-    }).then(function(addresses) {
-      assert.equal(addresses.length, 2, "Addresses length after delete is " + addresses.length + " instead of 2");
+      return ledger.getBidAddressCount();
+    }).then(function(addressesLength) {
+      assert.equal(addressesLength, 2, "Addresses length after delete is " + addressesLength + " instead of 2");
+    });
+  });
+});
+
+contract('Ledger integration test', function(accounts){
+  it("should allow preloan to inform ledger of it's existence", function() {
+    return Ledger.deployed().then(function(instance){
+      ledger = instance;
+      return Preloan.deployed();
+    }).then(function(instance) {
+      preloan = instance;
+      return preloan.setSide(1);
+    }).then(function() {
+      return preloan.informLedger(ledger.address);
+    }).then(function() {
+      return ledger.getAskAddressCount()
+    }).then(function(addressesLength) {
+      assert.equal(addressesLength, 1, "Addresses length after adding preloan is " + addressesLength + " instead of 1");
+      return preloan.ledgerAddress.call();
+    }).then(function(address) {
+      assert.equal(address, ledger.address, "Preloan has address of ledger equal to " + address + " instead of " + ledger.address);
     });
   });
 });

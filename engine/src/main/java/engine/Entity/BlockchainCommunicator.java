@@ -9,18 +9,12 @@ import org.web3j.protocol.http.HttpService;
 
 public class BlockchainCommunicator {
     
-    protected String privateKey;
-    protected final String precision;
-    protected final String scale;
-    protected final String paymentPeriod;               
+    protected String privateKey;              
     
     private static final Logger log = LoggerFactory.getLogger(LoanGiver.class);
     
     protected BlockchainCommunicator(final String privateKey){
         this.privateKey = privateKey;
-        this.precision = "8";
-        this.scale = "10000000000";
-        this.paymentPeriod = "155520000"; // 30 * 5184000 = days * seconds in one day
     }
     
     protected Web3j connectToDefaultNetwork() throws IOException{

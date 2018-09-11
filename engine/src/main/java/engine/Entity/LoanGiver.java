@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.Contract;
@@ -13,31 +15,43 @@ import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.tx.TransactionManager;
         
 public class LoanGiver extends BlockchainCommunicator{
+
     
     private static final Logger log = LoggerFactory.getLogger(LoanGiver.class);
     
     private final Web3j web3j;
     private final Credentials credentials;
     
+    private final String precision;
+    private final String scale;
+    private final String paymentPeriod;
+    
     enum Side {
+        UNDEFINED,
         BID,
         ASK
     };
     
-    public LoanGiver(final String privateKey) throws IOException {
+    public LoanGiver(final String privateKey, final Environment env) throws IOException {
         super(privateKey);
-        this.web3j = connectToDefaultNetwork();
-        this.credentials = loadCredentials();
+        web3j = connectToDefaultNetwork();
+        credentials = loadCredentials();
+        
+        precision = env.getProperty("loan.precision");
+        scale = env.getProperty("loan.scale");
+        paymentPeriod = env.getProperty("loan.paymentPeriod");
     }
     
     public String createPreloanBid(
             final String basis,
             final String interest,
             final String duration,
-            final String collateral
+            final String collateral,
+            final String ledgerAddress
     ) throws Exception{  
         String contractAddress = deployLoanOffer();
         setParameters(contractAddress, basis, interest, duration, collateral);        
+        informLedger(contractAddress, ledgerAddress);
         
         return contractAddress;
     }
@@ -59,8 +73,7 @@ public class LoanGiver extends BlockchainCommunicator{
             final String duration,
             final String collateral
     ) throws Exception{
-        log.info("Setting parameters for preloan bid.");        
-        TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, contractAddress);
+        log.info("Setting parameters for preloan bid.");
         
         Preloan preLoan = Preloan.load(
                 contractAddress, web3j,
@@ -78,7 +91,7 @@ public class LoanGiver extends BlockchainCommunicator{
         preLoan.setCollateral(new BigInteger(collateral)).send();
         
         String sideOrdinal = ((Integer)(Side.BID).ordinal()).toString();
-        preLoan.setSide(new BigInteger(sideOrdinal));
+        preLoan.setSide(new BigInteger(sideOrdinal)).send();
         log.info("Successfully set parameters for preloan bid.");        
     }
     
@@ -88,5 +101,20 @@ public class LoanGiver extends BlockchainCommunicator{
     
     private BigInteger getInterestReciprocal(String interest){
         return (BigInteger.ONE).divide(new BigInteger(interest));
+    }
+    
+    
+    private void informLedger(String contractAddress, String ledgerAddress) throws Exception {
+        log.info("Informing ledger of a new bid offer.");
+        
+        Preloan preLoan = Preloan.load(
+                contractAddress, web3j,
+                credentials, 
+                ManagedTransaction.GAS_PRICE, 
+                Contract.GAS_LIMIT);
+        
+        preLoan.informLedger(ledgerAddress).send();
+        
+        log.info("Ledger informed.");        
     }
 }

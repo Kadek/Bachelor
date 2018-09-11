@@ -1,5 +1,4 @@
 pragma solidity ^0.4.24;
-import "./Ledger.sol";
 
 contract Ledger {
 
@@ -12,13 +11,21 @@ contract Ledger {
 
 	function deleteAsk(uint index) public {
 		require(index < askAddresses.length);
-		askAddresses[index] = askAddresses[askAddresses.length-1];
-		delete askAddresses[askAddresses.length-1];
-		askAddresses.length--;
+		if(askAddresses.length > 1){
+			askAddresses[index] = askAddresses[askAddresses.length-1];
+			delete askAddresses[askAddresses.length-1];
+			askAddresses.length--;
+		}else{
+			delete askAddresses[askAddresses.length-1];
+		}
 	}
 
-	function getAskAddresses() constant public returns (address[]){
-		return askAddresses;
+	function getAskAddressAtRow(uint index) constant public returns (address){
+		return askAddresses[index];
+	}
+
+	function getAskAddressCount() constant public returns (uint){
+		return askAddresses.length;
 	}
 
 	function addBid(address bidAddress) public {
@@ -27,12 +34,20 @@ contract Ledger {
 
 	function deleteBid(uint index) public {
 		require(index < bidAddresses.length);
-		bidAddresses[index] = bidAddresses[bidAddresses.length-1];
-		delete bidAddresses[bidAddresses.length-1];
-		bidAddresses.length--;
+		if(askAddresses.length > 1){
+			bidAddresses[index] = bidAddresses[bidAddresses.length-1];
+			delete bidAddresses[bidAddresses.length-1];
+			bidAddresses.length--;
+		}else{
+			delete bidAddresses[bidAddresses.length-1];
+		}
 	}
 
-	function getBidAddresses() constant public returns (address[]){
-		return bidAddresses;
+	function getBidAddressAtRow(uint index) constant public returns (address){
+		return bidAddresses[index];
+	}
+
+	function getBidAddressCount() constant public returns (uint){
+		return bidAddresses.length;
 	}
 }

@@ -15,10 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-public class Application implements CommandLineRunner {
-        
-    @Autowired
-    public LedgerHandler ledgerHandler;
+public class Application {
     
     @Bean
     public Docket api() { 
@@ -34,11 +31,5 @@ public class Application implements CommandLineRunner {
     public static void main(String[] args) {
         log.info("Starting rest server");
         SpringApplication.run(Application.class, args);
-    }
-    
-    @Override
-    public void run(String... strings) throws Exception{
-        log.info("Checking if main ledger exists");  
-        ledgerHandler.handleLedger();
     }
 }

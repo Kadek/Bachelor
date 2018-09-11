@@ -1,5 +1,4 @@
 pragma solidity ^0.4.24;
-import "./Preloan.sol";
 
 contract Preloan {
 
@@ -23,6 +22,7 @@ contract Preloan {
 	}
 
 	address giver;
+	address public ledgerAddress;
 	uint public basis;
 	uint public interestScaled;
 	uint public interestReciprocal;
@@ -91,4 +91,23 @@ contract Preloan {
 		loanState = LoanState.CANCELLED;
 		selfdestruct(giver);
 	}
+
+	function informLedger(address incomingLedgerAddress) public {
+		require(ledgerAddress == 0);
+		require((side == Side.ASK) || (side == Side.BID));
+
+		Ledger ledger = Ledger(incomingLedgerAddress);
+		if(side == Side.ASK){
+			ledger.addAsk(this);
+		}else{
+			ledger.addBid(this);
+		}
+
+		ledgerAddress = incomingLedgerAddress;
+	}
+}
+
+contract Ledger {
+	function addAsk(address askAddress) public;
+    function addBid(address bidAddress) public;
 }
