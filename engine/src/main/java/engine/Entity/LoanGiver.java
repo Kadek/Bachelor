@@ -116,4 +116,31 @@ public class LoanGiver extends BlockchainCommunicator{
         
         log.info("Ledger informed.");        
     }
+    
+    public String deletePreloanBid(String bidAddress) throws Exception {
+        log.info("Cancelling preloan bid and informing ledger.");
+        
+        Preloan preloan = loadPreloan(bidAddress);
+        BigInteger index = findBidIndex(bidAddress);
+        preloan.cancelLoanOffer(index).send();
+        
+        log.info("Preloan cancelled and Ledger informed.");    
+        return "Success";
+    }
+    
+    private Preloan loadPreloan(final String bidAddress){
+        log.info("Loading preloan.");
+        Preloan preLoan = Preloan.load(
+                bidAddress, web3j,
+                credentials, 
+                ManagedTransaction.GAS_PRICE, 
+                Contract.GAS_LIMIT);
+        log.info("Preloan successfully loaded.");
+        return preLoan;
+    }
+
+    private BigInteger findBidIndex(String bidAddress) throws Exception {
+        LedgerHandler ledgerHandler = new LedgerHandler();
+        return ledgerHandler.findBidIndex(bidAddress);
+    }
 }

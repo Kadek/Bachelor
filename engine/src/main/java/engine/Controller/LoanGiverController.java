@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import engine.Entity.LoanGiver;
+import engine.Entity.LoanTaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
@@ -32,6 +33,20 @@ public class LoanGiverController {
                     , basis, interest, duration, collateral);
             return (new LoanGiver(privateKey, env))
                     .createPreloanBid(basis, interest, duration, collateral, ledgerAddress);
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+        
+    @PostMapping("/taker/cancelOffer")
+    public String cancelOffer(
+            @RequestParam(value="privateKey", defaultValue="0") String privateKey,
+            @RequestParam(value="offerAddress", defaultValue="0x0") String offerAddress)
+    {
+        try{
+            log.info("Cancelling bid preloan with address={}", offerAddress);
+            return (new LoanGiver(privateKey, env))
+                    .deletePreloanBid(offerAddress);
         }catch(Exception e){
             return e.toString();
         }

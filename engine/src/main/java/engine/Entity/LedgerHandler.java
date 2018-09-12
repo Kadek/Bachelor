@@ -88,5 +88,29 @@ public class LedgerHandler extends BlockchainCommunicator {
         }
         return (new Gson()).toJson(bids);
     }
+    
+    public BigInteger findAskIndex(final String askAddress) throws Exception{
+        Ledger ledger = loadLedger(getLedgerAddress());
+        
+        Integer count = Integer.parseInt(ledger.getAskAddressCount().send().toString());
+        for(int i = 0 ; i < count ; i++){
+            String currentAddress = ledger.getAskAddressAtRow(new BigInteger(String.valueOf(i))).send();
+            if(currentAddress.equals(askAddress))
+                return new BigInteger(String.valueOf(i));
+        }
+        return new BigInteger(String.valueOf(-1));        
+    }
+    
+    public BigInteger findBidIndex(final String bidAddress) throws Exception{
+        Ledger ledger = loadLedger(getLedgerAddress());
+        
+        Integer count = Integer.parseInt(ledger.getBidAddressCount().send().toString());
+        for(int i = 0 ; i < count ; i++){
+            String currentAddress = ledger.getBidAddressAtRow(new BigInteger(String.valueOf(i))).send();
+            if(currentAddress.equals(bidAddress))
+                return new BigInteger(String.valueOf(i));
+        }
+        return new BigInteger(String.valueOf(-1));        
+    }
 
 }

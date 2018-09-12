@@ -103,14 +103,36 @@ public class LoanTaker extends BlockchainCommunicator{
     private void informLedger(String contractAddress, String ledgerAddress) throws Exception {
         log.info("Informing ledger of a new ask offer.");
         
+        Preloan preloan = loadPreloan(contractAddress);
+        preloan.informLedger(ledgerAddress).send();
+        
+        log.info("Ledger informed.");        
+    }
+    
+    public String deletePreloanAsk(String contractAddress) throws Exception {
+        log.info("Cancelling preloan ask and informing ledger.");
+        
+        Preloan preloan = loadPreloan(contractAddress);
+        BigInteger index = findAskIndex(contractAddress);
+        preloan.cancelLoanOffer(index).send();
+        
+        log.info("Preloan cancelled and Ledger informed.");    
+        return "Success";
+    }
+    
+    private Preloan loadPreloan(final String contractAddress){
+        log.info("Loading preloan.");
         Preloan preLoan = Preloan.load(
                 contractAddress, web3j,
                 credentials, 
                 ManagedTransaction.GAS_PRICE, 
                 Contract.GAS_LIMIT);
-        
-        preLoan.informLedger(ledgerAddress).send();
-        
-        log.info("Ledger informed.");        
+        log.info("Preloan successfully loaded.");
+        return preLoan;
+    }
+
+    private BigInteger findAskIndex(String askAddress) throws Exception {
+        LedgerHandler ledgerHandler = new LedgerHandler();
+        return ledgerHandler.findAskIndex(askAddress);
     }
 }

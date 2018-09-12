@@ -13,11 +13,9 @@ contract Ledger {
 		require(index < askAddresses.length);
 		if(askAddresses.length > 1){
 			askAddresses[index] = askAddresses[askAddresses.length-1];
-			delete askAddresses[askAddresses.length-1];
-			askAddresses.length--;
-		}else{
-			delete askAddresses[askAddresses.length-1];
 		}
+		delete askAddresses[askAddresses.length-1];
+		askAddresses.length--;
 	}
 
 	function getAskAddressAtRow(uint index) constant public returns (address){
@@ -36,11 +34,10 @@ contract Ledger {
 		require(index < bidAddresses.length);
 		if(askAddresses.length > 1){
 			bidAddresses[index] = bidAddresses[bidAddresses.length-1];
-			delete bidAddresses[bidAddresses.length-1];
-			bidAddresses.length--;
-		}else{
-			delete bidAddresses[bidAddresses.length-1];
 		}
+		delete bidAddresses[bidAddresses.length-1];
+		bidAddresses.length--;
+		
 	}
 
 	function getBidAddressAtRow(uint index) constant public returns (address){

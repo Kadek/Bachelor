@@ -106,7 +106,7 @@ contract('Ledger unit test', function(accounts){
 });
 
 contract('Ledger integration test', function(accounts){
-  it("should allow preloan to inform ledger of it's existence", function() {
+  it("should allow preloan to inform ledger of it's existence and destruction", function() {
     return Ledger.deployed().then(function(instance){
       ledger = instance;
       return Preloan.deployed();
@@ -122,6 +122,11 @@ contract('Ledger integration test', function(accounts){
       return preloan.ledgerAddress.call();
     }).then(function(address) {
       assert.equal(address, ledger.address, "Preloan has address of ledger equal to " + address + " instead of " + ledger.address);
+      return preloan.cancelLoanOffer(0);
+    }).then(function() {
+      return ledger.getAskAddressCount()
+    }).then(function(addressesLength) {
+      assert.equal(addressesLength, 1, "Addresses length after cancelling preloan is " + addressesLength + " instead of 0");
     });
   });
 });

@@ -84,11 +84,19 @@ contract Preloan {
 		side = _side;
 	}
 
-	function cancelLoanOffer() public {
+	function cancelLoanOffer(uint index) public {
 		require(msg.sender == giver);
 
 		require(loanState == LoanState.OFFER);
 		loanState = LoanState.CANCELLED;
+
+		Ledger ledger = Ledger(ledgerAddress);
+		if(side == Side.ASK){
+			ledger.deleteAsk(index);
+		}else{
+			ledger.deleteBid(index);
+		}	
+
 		selfdestruct(giver);
 	}
 
@@ -110,4 +118,6 @@ contract Preloan {
 contract Ledger {
 	function addAsk(address askAddress) public;
     function addBid(address bidAddress) public;
+    function deleteAsk(uint index) public;
+    function deleteBid(uint index) public;
 }

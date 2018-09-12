@@ -37,4 +37,18 @@ public class LoanTakerController {
             return e.toString();
         }
     }
+        
+    @PostMapping("/taker/cancelRequest")
+    public String cancelRequest(
+            @RequestParam(value="privateKey", defaultValue="0") String privateKey,
+            @RequestParam(value="offerAddress", defaultValue="0x0") String offerAddress)
+    {
+        try{
+            log.info("Cancelling ask preloan with address={}", offerAddress);
+            return (new LoanTaker(privateKey, env))
+                    .deletePreloanAsk(offerAddress);
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
 }
