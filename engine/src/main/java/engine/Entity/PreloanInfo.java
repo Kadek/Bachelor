@@ -43,4 +43,12 @@ public class PreloanInfo extends BlockchainCommunicator {
         return preLoan.basis().sendAsync().get().toString();
     }
 
+    public String getLedgerAddress() throws InterruptedException, ExecutionException {
+        return preLoan.ledgerAddress().sendAsync().get().toString();
+    }
+
+    public String getSide() throws InterruptedException, ExecutionException {
+        return preLoan.side().sendAsync().get().toString();
+    }
+
 }

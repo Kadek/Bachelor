@@ -2,8 +2,8 @@ pragma solidity ^0.4.24;
 
 contract Ledger {
 
-	address[] askAddresses;
-	address[] bidAddresses;
+	address[] public askAddresses;
+	address[] public bidAddresses;
 
 	function addAsk(address askAddress) public {
 		askAddresses.push(askAddress);

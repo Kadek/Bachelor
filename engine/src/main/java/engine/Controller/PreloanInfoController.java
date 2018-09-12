@@ -23,4 +23,28 @@ public class PreloanInfoController {
             return e.toString();
         }
     }
+    
+    @GetMapping("/preloanInfo/getLedgerAddress")
+    public String getLedgerAddress(
+            @RequestParam(value="contractAddress", defaultValue="0") String contractAddress) 
+    {
+        try{
+            log.info("Checking ledger address of a loan with address {}", contractAddress);
+            return (new PreloanInfo(contractAddress)).getLedgerAddress();
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+    
+    @GetMapping("/preloanInfo/getSide")
+    public String getSide(
+            @RequestParam(value="contractAddress", defaultValue="0") String contractAddress) 
+    {
+        try{
+            log.info("Checking side of a loan with address {}", contractAddress);
+            return (new PreloanInfo(contractAddress)).getSide();
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
 }

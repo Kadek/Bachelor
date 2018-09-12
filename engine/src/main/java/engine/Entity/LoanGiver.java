@@ -28,8 +28,8 @@ public class LoanGiver extends BlockchainCommunicator{
     
     enum Side {
         UNDEFINED,
-        BID,
-        ASK
+        ASK,
+        BID
     };
     
     public LoanGiver(final String privateKey, final Environment env) throws IOException {
