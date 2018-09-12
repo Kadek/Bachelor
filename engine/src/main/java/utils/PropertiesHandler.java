@@ -5,15 +5,9 @@
  */
 package utils;
 
-import engine.Entity.LoanGiver;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -29,71 +23,77 @@ public class PropertiesHandler {
     private static final Logger log = LoggerFactory.getLogger(PropertiesHandler.class);
     
     public void setProperty(final String propertyName, final String propertyValue){
-        Properties prop = new Properties();
-	OutputStream output = null;
+        
+        FileOutputStream input = null;
+        
+        handleFile(input, new HandleStream<FileOutputStream>() {
+            @Override
+            public String handleStream(FileOutputStream output, Properties prop, String path) throws IOException {
+                log.info("Looking for properties file");
+                output = new FileOutputStream(path);
+                log.info("Successfully found properties file");
 
-	try {            
-            log.info("Looking for properties file");
-            String filename = "application.properties";
-            String workingDir = System.getProperty("user.dir");
-            Path path = Paths.get(workingDir, "build", "resources", "main", filename);
-            output = new FileOutputStream(path.toString());
-            log.info("Successfully found properties file");
-                     
-            // set the properties value
-            prop.setProperty(propertyName, propertyValue);
+                // set the properties value
+                prop.setProperty(propertyName, propertyValue);
 
-            // save properties to project root folder
-            log.info("Saving new value to properties file");
-            prop.store(output, null);
-            log.info("Successfully saved new value to properties file");
-
-	} catch (IOException io) {
-            io.printStackTrace();
-	} finally {
-            if (output != null) {
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                // save properties to project root folder
+                log.info("Saving new value to properties file");
+                prop.store(output, null);
+                log.info("Successfully saved new value to properties file");
+                
+                return "";
             }
-
-	}
+        });
     }
     
     public String getProperty(final String propertyName){
-        Properties prop = new Properties();
-    	InputStream input = null;
-    	String result = "";
         
-    	try {
-            log.info("Looking for properties file");
+        FileInputStream input = null;
+        
+        return handleFile(input, new HandleStream<FileInputStream>() {
+            @Override
+            public String handleStream(FileInputStream input, Properties prop, String path) throws IOException {
+                log.info("Looking for properties file");
+                input = new FileInputStream(path);
+                log.info("Successfully found properties file");
+
+                //load a properties file from class path, inside static method
+                prop.load(input);
+
+                //get the property value and print it out
+                log.info("Reading value from properties file");
+                return prop.getProperty(propertyName);
+            }
+        });
+        
+    }
+    
+    @FunctionalInterface
+    private interface HandleStream<T>{
+        String handleStream(T stream, Properties prop, String path) throws IOException;
+    }
+    
+    private <T> String handleFile(T stream, HandleStream<T> streamHandler){
+        Properties prop = new Properties();
+        String result = "";
+        try {
             String filename = "application.properties";
             String workingDir = System.getProperty("user.dir");
             Path path = Paths.get(workingDir, "build", "resources", "main", filename);
-            input = new FileInputStream(filename);
-            log.info("Successfully found properties file");
-
-            //load a properties file from class path, inside static method
-            prop.load(input);
-
-            //get the property value and print it out
-            log.info("Reading value from properties file");
-            result = prop.getProperty(propertyName);
-
+            
+            result = streamHandler.handleStream(stream, prop, path.toString());
+            
     	} catch (IOException ex) {
             ex.printStackTrace();
         } finally{
-            if(input!=null){
+            if(stream!=null){
                 try {
-                    input.close();
-                } catch (IOException e) {
+                    stream.getClass().getMethod("close", null).invoke(stream, null);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        
         return result;
     }
 }

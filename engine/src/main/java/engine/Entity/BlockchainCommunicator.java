@@ -31,4 +31,5 @@ public class BlockchainCommunicator {
         log.info("Credentials loaded");
         return credentialsLocal;
     }
+   
 }

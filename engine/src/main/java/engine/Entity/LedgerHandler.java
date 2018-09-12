@@ -42,6 +42,20 @@ public class LedgerHandler extends BlockchainCommunicator {
         log.info("Contract deployed successfully");
         return ledger.getContractAddress();
     }
+    
+    private Ledger loadLedger(final String contractAddress) throws Exception {
+        log.info("Loading ledger");
+        TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, contractAddress);
+        
+        Ledger ledger = Ledger.load(
+                contractAddress, web3j,
+                transactionManager, 
+                ManagedTransaction.GAS_PRICE, 
+                Contract.GAS_LIMIT);
+        log.info("Ledger loaded");
+        
+        return ledger;
+    }
 
     public void setLedgerAddress(final String ledgerAddress) {
         PropertiesHandler prop = new PropertiesHandler();
@@ -54,15 +68,7 @@ public class LedgerHandler extends BlockchainCommunicator {
     }
 
     public String getAsks(final String contractAddress) throws InterruptedException, ExecutionException, Exception {
-        log.info("Loading ledger");
-        TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, contractAddress);
-        
-        Ledger ledger = Ledger.load(
-                contractAddress, web3j,
-                transactionManager, 
-                ManagedTransaction.GAS_PRICE, 
-                Contract.GAS_LIMIT);
-        log.info("Ledger loaded");
+        Ledger ledger = loadLedger(contractAddress);
         
         Integer count = Integer.parseInt(ledger.getAskAddressCount().send().toString());
         String[] asks = new String[count];
@@ -73,15 +79,7 @@ public class LedgerHandler extends BlockchainCommunicator {
     }
 
     public String getBids(final String contractAddress) throws InterruptedException, ExecutionException, Exception {
-        log.info("Loading ledger");
-        TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, contractAddress);
-        
-        Ledger ledger = Ledger.load(
-                contractAddress, web3j,
-                transactionManager, 
-                ManagedTransaction.GAS_PRICE, 
-                Contract.GAS_LIMIT);
-        log.info("Ledger loaded");
+        Ledger ledger = loadLedger(contractAddress);
                 
         Integer count = Integer.parseInt(ledger.getBidAddressCount().send().toString());
         String[] bids = new String[count];
