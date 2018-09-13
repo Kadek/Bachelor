@@ -23,7 +23,7 @@ public class LedgerHandler extends BlockchainCommunicator {
     private final Credentials credentials;
 
     public LedgerHandler() throws IOException{
-        super("0x0");
+        super();
         web3j = connectToDefaultNetwork();
         credentials = null;
     }
@@ -32,6 +32,12 @@ public class LedgerHandler extends BlockchainCommunicator {
         super(privateKey);
         web3j = connectToDefaultNetwork();
         credentials = loadCredentials();
+    }
+    
+    public LedgerHandler(Web3j web3j) throws IOException{
+        super();
+        this.web3j = web3j;
+        credentials = null;
     }
     
     public String createLedger() throws Exception {
@@ -44,17 +50,11 @@ public class LedgerHandler extends BlockchainCommunicator {
     }
     
     private Ledger loadLedger(final String contractAddress) throws Exception {
-        log.info("Loading ledger");
-        TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, contractAddress);
-        
-        Ledger ledger = Ledger.load(
-                contractAddress, web3j,
-                transactionManager, 
-                ManagedTransaction.GAS_PRICE, 
-                Contract.GAS_LIMIT);
-        log.info("Ledger loaded");
-        
-        return ledger;
+        return loadContractWithoutCredentials(
+                Ledger.class, 
+                web3j, 
+                contractAddress
+        );
     }
 
     public void setLedgerAddress(final String ledgerAddress) {
@@ -67,7 +67,7 @@ public class LedgerHandler extends BlockchainCommunicator {
         return prop.getProperty("ledgerAddress");
     }
 
-    public String getAsks(final String contractAddress) throws InterruptedException, ExecutionException, Exception {
+    public String[] getAsks(final String contractAddress) throws InterruptedException, ExecutionException, Exception {
         Ledger ledger = loadLedger(contractAddress);
         
         Integer count = Integer.parseInt(ledger.getAskAddressCount().send().toString());
@@ -75,10 +75,10 @@ public class LedgerHandler extends BlockchainCommunicator {
         for(int i = 0 ; i < count ; i++){
             asks[i] = ledger.getAskAddressAtRow(new BigInteger(String.valueOf(i))).send();
         }
-        return (new Gson()).toJson(asks);
+        return asks;
     }
 
-    public String getBids(final String contractAddress) throws InterruptedException, ExecutionException, Exception {
+    public String[] getBids(final String contractAddress) throws InterruptedException, ExecutionException, Exception {
         Ledger ledger = loadLedger(contractAddress);
                 
         Integer count = Integer.parseInt(ledger.getBidAddressCount().send().toString());
@@ -86,7 +86,7 @@ public class LedgerHandler extends BlockchainCommunicator {
         for(int i = 0 ; i < count ; i++){
             bids[i] = ledger.getBidAddressAtRow(new BigInteger(String.valueOf(i))).send();
         }
-        return (new Gson()).toJson(bids);
+        return bids;
     }
     
     public BigInteger findAskIndex(final String askAddress) throws Exception{

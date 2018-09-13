@@ -121,14 +121,12 @@ public class LoanTaker extends BlockchainCommunicator{
     }
     
     private Preloan loadPreloan(final String contractAddress){
-        log.info("Loading preloan.");
-        Preloan preLoan = Preloan.load(
-                contractAddress, web3j,
+        return loadContractWithCredentials(
+                Preloan.class, 
                 credentials, 
-                ManagedTransaction.GAS_PRICE, 
-                Contract.GAS_LIMIT);
-        log.info("Preloan successfully loaded.");
-        return preLoan;
+                web3j, 
+                contractAddress
+        );
     }
 
     private BigInteger findAskIndex(String askAddress) throws Exception {

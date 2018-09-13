@@ -5,14 +5,11 @@ import java.io.IOException;
 import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
-import org.web3j.tx.ReadonlyTransactionManager;
-import org.web3j.tx.TransactionManager;
         
 public class LoanGiver extends BlockchainCommunicator{
 
@@ -106,12 +103,7 @@ public class LoanGiver extends BlockchainCommunicator{
     private void informLedger(String contractAddress, String ledgerAddress) throws Exception {
         log.info("Informing ledger of a new bid offer.");
         
-        Preloan preLoan = Preloan.load(
-                contractAddress, web3j,
-                credentials, 
-                ManagedTransaction.GAS_PRICE, 
-                Contract.GAS_LIMIT);
-        
+        Preloan preLoan = loadPreloan(contractAddress);
         preLoan.informLedger(ledgerAddress).send();
         
         log.info("Ledger informed.");        
@@ -129,14 +121,12 @@ public class LoanGiver extends BlockchainCommunicator{
     }
     
     private Preloan loadPreloan(final String bidAddress){
-        log.info("Loading preloan.");
-        Preloan preLoan = Preloan.load(
-                bidAddress, web3j,
+        return loadContractWithCredentials(
+                Preloan.class, 
                 credentials, 
-                ManagedTransaction.GAS_PRICE, 
-                Contract.GAS_LIMIT);
-        log.info("Preloan successfully loaded.");
-        return preLoan;
+                web3j, 
+                bidAddress
+        );
     }
 
     private BigInteger findBidIndex(String bidAddress) throws Exception {

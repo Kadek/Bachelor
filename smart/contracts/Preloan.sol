@@ -33,6 +33,7 @@ contract Preloan {
 	Collateral public collateral;
 	LoanState public loanState;
 	Side public side;
+	uint public timeCreated;
 
 	constructor () payable {
 		giver = msg.sender;
@@ -112,6 +113,11 @@ contract Preloan {
 		}
 
 		ledgerAddress = incomingLedgerAddress;
+		timeCreated = now;
+	}
+
+	function getAddress() constant public returns (address){
+		return this;
 	}
 }
 

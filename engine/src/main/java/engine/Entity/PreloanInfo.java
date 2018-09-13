@@ -20,23 +20,18 @@ public class PreloanInfo extends BlockchainCommunicator {
     private final Preloan preLoan;
 
     public PreloanInfo(final String contractAddress) throws IOException{
-        super("0x0");
+        super();
         this.contractAddress = contractAddress;
         this.web3j = connectToDefaultNetwork();
         this.preLoan = loadPreloan();
     }
     
     private Preloan loadPreloan(){
-        
-        TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, contractAddress);
-        
-        Preloan loanLocal = Preloan.load(
-                contractAddress, web3j,
-                transactionManager, 
-                ManagedTransaction.GAS_PRICE, 
-                Contract.GAS_LIMIT);
-        log.info("Preloan loaded");
-        return loanLocal;
+        return loadContractWithoutCredentials(
+                Preloan.class,
+                web3j, 
+                contractAddress
+        );
     }
     
     public String getPreloanBasis() throws InterruptedException, ExecutionException{
@@ -44,7 +39,7 @@ public class PreloanInfo extends BlockchainCommunicator {
     }
 
     public String getLedgerAddress() throws InterruptedException, ExecutionException {
-        return preLoan.ledgerAddress().sendAsync().get().toString();
+        return preLoan.ledgerAddress().sendAsync().get();
     }
 
     public String getSide() throws InterruptedException, ExecutionException {

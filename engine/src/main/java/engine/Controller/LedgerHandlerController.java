@@ -1,5 +1,6 @@
 package engine.Controller;
 
+import com.google.gson.Gson;
 import engine.Entity.LedgerHandler;
 import engine.Entity.LoanGiver;
 import org.slf4j.Logger;
@@ -55,7 +56,8 @@ class LedgerHandlerController{
     {
         try{
             log.info("Getting ask addresses");
-            return (new LedgerHandler()).getAsks(ledgerAddress);
+            String[] asks = (new LedgerHandler()).getAsks(ledgerAddress);
+            return (new Gson()).toJson(asks);
         }catch(Exception e){
             return e.toString();
         }
@@ -66,8 +68,9 @@ class LedgerHandlerController{
             @RequestParam(value="ledgerAddress", defaultValue="0x0") String ledgerAddress)
     {
         try{
-            log.info("Getting ask addresses");
-            return (new LedgerHandler()).getBids(ledgerAddress);
+            log.info("Getting bid addresses");
+            String[] bids = (new LedgerHandler()).getBids(ledgerAddress);
+            return (new Gson()).toJson(bids);
         }catch(Exception e){
             return e.toString();
         }
