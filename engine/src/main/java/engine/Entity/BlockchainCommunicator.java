@@ -55,7 +55,12 @@ public class BlockchainCommunicator {
         T contract = null;
         
         try {
-            Method load = T.getMethod("load", null);
+            Method load = T.getMethod("load",
+                String.class, Web3j.class,
+                Credentials.class,
+                BigInteger.class,
+                BigInteger.class
+            );
             contract = (T)load.invoke(T, 
                 address, web3j,
                 credentials, 
@@ -79,12 +84,18 @@ public class BlockchainCommunicator {
         T contract = null;
         
         try {
-            Method load = T.getMethod("load", null);
+            Method load = T.getMethod("load",
+                String.class, Web3j.class,
+                TransactionManager.class,
+                BigInteger.class,
+                BigInteger.class
+            );
             contract = (T)load.invoke(T, 
                 address, web3j,
                 transactionManager, 
                 ManagedTransaction.GAS_PRICE, 
-                Contract.GAS_LIMIT);
+                Contract.GAS_LIMIT
+            );
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(BlockchainCommunicator.class.getName()).log(Level.SEVERE, null, ex);
         };

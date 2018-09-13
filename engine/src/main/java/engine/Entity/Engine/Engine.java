@@ -101,7 +101,9 @@ public class Engine extends BlockchainCommunicator{
         for(int i = 0; i < classifiers.size()-1; i++){
             BigInteger argument = new BigInteger("-1");
             try {
-                RemoteCall<BigInteger> call = (RemoteCall<BigInteger>) preloan.getClass().getMethod(classifiers.get(i)).invoke(null, null);
+                RemoteCall<BigInteger> call = (RemoteCall<BigInteger>) Preloan.class
+                        .getMethod(classifiers.get(i))
+                        .invoke(preloan, null);
                 argument = call.send();
             } catch (Exception ex) {
                 java.util.logging.Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);

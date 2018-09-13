@@ -46,7 +46,7 @@ public class PreloanStructure {
             return children.get(argument);
         else{
             PreloanStructure preloanStructure;
-            if(classifier.equals(""))
+            if(nextClassifier.equals(""))
                 preloanStructure = new PreloanStructure();
             else{
                 preloanStructure = new PreloanStructure(nextClassifier);
