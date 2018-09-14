@@ -2,11 +2,11 @@ package engine.Controller;
 
 import com.google.gson.Gson;
 import engine.Entity.LedgerHandler;
-import engine.Entity.LoanGiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,9 +16,7 @@ class LedgerHandlerController{
     private static final Logger log = LoggerFactory.getLogger(LedgerHandlerController.class);
         
     @PostMapping("/ledger/createLedger")
-    public String offerLoan(
-            @RequestParam(value="privateKey", defaultValue="0") String privateKey)
-    {
+    public String createLedger(@RequestBody String privateKey){
         try{
             log.info("Creating a new ledger");
             return (new LedgerHandler(privateKey)).createLedger();
@@ -29,7 +27,7 @@ class LedgerHandlerController{
         
     @PostMapping("/ledger/setLedgerAddress")
     public String getLedgerAddress(
-            @RequestParam(value="ledgerAddress", defaultValue="0x0") String ledgerAddress)
+            @RequestBody String ledgerAddress)
     {
         try{
             log.info("Setting ledger address");

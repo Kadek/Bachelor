@@ -7,7 +7,6 @@ package engine.Entity.Engine;
 
 import engine.Preloan;
 import java.math.BigInteger;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
@@ -19,21 +18,15 @@ import java.util.PriorityQueue;
 public class PreloanStructure {
 
     private String classifier;
-    HashMap<String, PreloanStructure> children;
-    PriorityQueue<PreloanData> preloans;
+    private HashMap<String, PreloanStructure> children;
+    private PriorityQueue<PreloanData> preloans;
 
-    public PreloanStructure() {
-        this.preloans = new PriorityQueue<>(
-            new Comparator<PreloanData>(){
-                @Override
-                public int compare(PreloanData pd1, PreloanData pd2){
-                    if(pd1.interest.equals(pd2.interest))
-                        return pd1.timeCreated.compareTo(pd2.timeCreated);
-                    else
-                        return pd1.interest.compareTo(pd2.interest);
-                }
-            }
-        );
+    public PreloanStructure(){
+        
+    }
+    
+    public PreloanStructure(boolean placeholder) {
+        this.preloans = new PriorityQueue<>();
     }
 
     public PreloanStructure(String classifier) {
@@ -47,7 +40,7 @@ public class PreloanStructure {
         else{
             PreloanStructure preloanStructure;
             if(nextClassifier.equals(""))
-                preloanStructure = new PreloanStructure();
+                preloanStructure = new PreloanStructure(true);
             else{
                 preloanStructure = new PreloanStructure(nextClassifier);
             }
@@ -60,31 +53,21 @@ public class PreloanStructure {
         PreloanData preloanData = new PreloanData(
             preloan.basis().send(),
             preloan.interestScaled().send(),
-            preloan.scale().send(),
             preloan.getAddress().send(),
-            preloan.timeCreated().send()
+            preloan.timeCreated().send(),
+            preloan.side().send()
         );
 
         preloans.add(preloanData);
     }
 
-    private class PreloanData{
-        public BigInteger basis;
-        public BigInteger interest;
-        public String address;
-        public BigInteger timeCreated;
-
-        public PreloanData(
-            final BigInteger basis,
-            final BigInteger interestScaled,
-            final BigInteger scale,
-            final String address,
-            final BigInteger timeCreated
-        ){
-            this.basis = basis;
-            this.interest = interestScaled.divide(scale);
-            this.address = address;
-            this.timeCreated = timeCreated;
-        }        
+    public HashMap<String, PreloanStructure> getChildren() {
+        return children;
     }
+
+    public PriorityQueue<PreloanData> getPreloans() {
+        return preloans;
+    }
+
+
 }    

@@ -1,15 +1,15 @@
 package engine.Controller;
 
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import engine.Entity.LoanGiver;
 import engine.Entity.LoanTaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 public class LoanTakerController {
@@ -21,18 +21,20 @@ public class LoanTakerController {
         
     @PostMapping("/taker/requestLoan")
     public String requestLoan(
-            @RequestParam(value="privateKey", defaultValue="0") String privateKey,
-            @RequestParam(value="basis", defaultValue="0") String basis,
-            @RequestParam(value="interest", defaultValue="0") String interest,
-            @RequestParam(value="duration", defaultValue="0") String duration,
-            @RequestParam(value="collateral", defaultValue="0") String collateral,
-            @RequestParam(value="ledgerAddress", defaultValue="0") String ledgerAddress)
+            @RequestBody String loanFormJson)
     {
         try{
+            LoanForm loanForm = (new Gson()).fromJson(loanFormJson, LoanForm.class);
             log.info("Creating ask preloan with parameters: basis={} interest={} duration={}, collateral={}"
-                    , basis, interest, duration, collateral);
-            return (new LoanTaker(privateKey, env))
-                    .createPreloanAsk(basis, interest, duration, collateral, ledgerAddress);
+                , loanForm.getBasis(), loanForm.getInterest(), loanForm.getDuration(), loanForm.getCollateral());
+            return (new LoanTaker(loanForm.getPrivateKey(), env))
+                .createPreloanAsk(
+                    loanForm.getBasis(), 
+                    loanForm.getInterest(), 
+                    loanForm.getDuration(), 
+                    loanForm.getCollateral(), 
+                    loanForm.getLedgerAddress()
+            );
         }catch(Exception e){
             return e.toString();
         }
@@ -40,15 +42,75 @@ public class LoanTakerController {
         
     @PostMapping("/taker/cancelRequest")
     public String cancelRequest(
-            @RequestParam(value="privateKey", defaultValue="0") String privateKey,
-            @RequestParam(value="offerAddress", defaultValue="0x0") String offerAddress)
+            @RequestBody String cancelFormJson)
     {
         try{
-            log.info("Cancelling ask preloan with address={}", offerAddress);
-            return (new LoanTaker(privateKey, env))
-                    .deletePreloanAsk(offerAddress);
+            CancelForm cancelForm = (new Gson()).fromJson(cancelFormJson, CancelForm.class);
+            log.info("Cancelling ask preloan with address={}", cancelForm.getOfferAddress());
+            return (new LoanTaker(cancelForm.getPrivateKey(), env))
+                    .deletePreloanAsk(cancelForm.getOfferAddress());
         }catch(Exception e){
             return e.toString();
         }
+    }
+    
+    private class CancelForm{
+
+        public CancelForm(String privateKey, String offerAddress) {
+            this.privateKey = privateKey;
+            this.offerAddress = offerAddress;
+        }
+        private String privateKey;
+        private String offerAddress;
+
+        public String getPrivateKey() {
+            return privateKey;
+        }
+
+        public String getOfferAddress() {
+            return offerAddress;
+        }
+    }
+    
+    private class LoanForm{
+
+        public LoanForm(String privateKey, String basis, String interest, String duration, String collateral, String ledgerAddress) {
+            this.privateKey = privateKey;
+            this.basis = basis;
+            this.interest = interest;
+            this.duration = duration;
+            this.collateral = collateral;
+            this.ledgerAddress = ledgerAddress;
+        }
+
+        public String getPrivateKey() {
+            return privateKey;
+        }
+
+        public String getBasis() {
+            return basis;
+        }
+
+        public String getInterest() {
+            return interest;
+        }
+
+        public String getDuration() {
+            return duration;
+        }
+
+        public String getCollateral() {
+            return collateral;
+        }
+
+        public String getLedgerAddress() {
+            return ledgerAddress;
+        }
+        private String privateKey;
+        private String basis;
+        private String interest;
+        private String duration;
+        private String collateral;
+        private String ledgerAddress;
     }
 }

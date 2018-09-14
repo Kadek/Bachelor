@@ -1,11 +1,18 @@
 package engine.Entity.Engine;
 
+import com.google.gson.Gson;
 import engine.Entity.BlockchainCommunicator;
 import engine.Entity.LedgerHandler;
 import engine.Preloan;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +32,13 @@ public class Engine extends BlockchainCommunicator{
         UNDEFINED,
         ASK,
         BID
+    };
+    
+    enum CompareState {
+        NONE,
+        ASK,
+        BID,
+        BOTH
     };
     
     public Engine() throws IOException {
@@ -117,4 +131,118 @@ public class Engine extends BlockchainCommunicator{
         }
     }
 
+    public ArrayList<MatchData> matchOrders(String orders){
+        PreloanStructure preloanStructure = (new Gson()).fromJson(orders, PreloanStructure.class);
+        ArrayList<MatchData> matchStructure = new ArrayList<>();
+        
+        PreloanStructure asks = preloanStructure.getChild("1", "");
+        Set<String> askCollaterals = asks.getChildren().keySet();
+        PreloanStructure bids = preloanStructure.getChild("2", "");
+        Set<String> bidCollaterals = bids.getChildren().keySet();
+        
+        Iterator collateralIterator = askCollaterals.iterator();
+        while(collateralIterator.hasNext()){
+            String collateral = (String)collateralIterator.next();
+            if(bidCollaterals.contains(collateral)){
+                matchStructure.addAll(
+                    secondMatchStep(asks.getChild(collateral, ""), bids.getChild(collateral, ""))
+                );
+            }
+        }
+        return matchStructure;
+    }
+    
+    private ArrayList<MatchData> secondMatchStep(PreloanStructure asks, PreloanStructure bids){
+        Set<String> askDurations = asks.getChildren().keySet();
+        Set<String> bidDurations = bids.getChildren().keySet();
+        
+        Iterator durationIterator = askDurations.iterator();
+        ArrayList<MatchData> matches = new ArrayList<>();
+        while(durationIterator.hasNext()){
+            String duration = (String)durationIterator.next();
+            if(bidDurations.contains(duration)){
+                ArrayList<MatchData> match = actualMatch(
+                    asks.getChild(duration, "").getPreloans(),
+                    bids.getChild(duration, "").getPreloans()
+                );
+                if(match != null)
+                    matches.addAll(match);
+            }
+        }
+        return matches;
+    }
+    
+    private ArrayList<MatchData> actualMatch(
+        final PriorityQueue<PreloanData> asks,
+        final PriorityQueue<PreloanData> bids
+    ){
+        Iterator asksIterator = asks.iterator();
+        Iterator bidsIterator = bids.iterator();
+        ArrayList<MatchData> matches = new ArrayList<>();
+        
+        boolean flag = true;
+        PreloanData ask = null;
+        PreloanData bid = null;
+        while(flag){
+            if(ask == null && asksIterator.hasNext()){
+                ask = (PreloanData)asksIterator.next();
+            }
+            if(bid == null && bidsIterator.hasNext()){
+                bid = (PreloanData)bidsIterator.next();
+            }
+            
+            if(ask == null || bid == null){
+                flag = false;
+                continue;
+            }
+            
+            CompareState compareState = compareSides(ask, bid, matches);
+            if(compareState == CompareState.BOTH){
+                bid = null;
+                ask = null;
+            }else if(compareState == CompareState.ASK){
+                bid.basis.subtract(ask.basis);
+                ask = null;
+            }else if(compareState == CompareState.BID){    
+                ask.basis.subtract(bid.basis);
+                bid = null;
+            }else{
+                flag = false;
+            }
+            
+        }
+        
+        return matches;
+    }
+    
+    private CompareState compareSides(
+        PreloanData ask, 
+        PreloanData bid,
+        ArrayList<MatchData> matches
+    ){
+        final String bidAddress = bid.address;
+        final String askAddress = ask.address;
+        final String bidBasis = bid.basis.toString();
+        final String askBasis = ask.basis.toString();
+        
+        if(bid.interest.compareTo(ask.interest) <= 0){
+            
+            matches.add(
+                new MatchData(
+                    bidAddress, bidBasis,
+                    askAddress, askBasis
+                )
+            );
+            
+            if(bid.basis.compareTo(ask.basis) == 0){
+                return CompareState.BOTH;
+            }else if(bid.basis.compareTo(ask.basis) > 0){
+                return CompareState.ASK;
+            }else{
+                return CompareState.BID;
+            }
+        }else{
+            return CompareState.NONE;
+        }
+    }
 }
