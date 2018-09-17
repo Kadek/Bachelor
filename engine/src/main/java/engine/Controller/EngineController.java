@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import engine.Entity.Engine.Engine;
 import engine.Entity.Engine.MatchData;
 import engine.Entity.Engine.PreloanStructure;
+import engine.Entity.Engine.TransactionStructure;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class EngineController {
     {
         try{
             log.info("Getting sorted orders from ledger with address {}", ledgerAddress);
-            PreloanStructure preloanStructure = (new Engine()).getSortedOrders(ledgerAddress);
+            PreloanStructure preloanStructure = (new Engine(true)).getSortedOrders(ledgerAddress);
             return (new Gson()).toJson(preloanStructure);
         }catch(Exception e){
             return e.toString();
@@ -38,8 +39,23 @@ public class EngineController {
     {
         try{
             log.info("Getting matches from orders");
-            ArrayList<MatchData> matchStructure = (new Engine()).matchOrders(orders);
+            ArrayList<MatchData> matchStructure = (new Engine(false)).matchOrders(orders);
             return (new Gson()).toJson(matchStructure);
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+        
+    @PostMapping("/engine/createLoans")
+    public String createLoans(
+            @RequestBody String transactions) 
+    {
+        try{
+            log.info("Creating loans");
+            TransactionStructure transactionStructure = (new Gson()).fromJson(transactions, TransactionStructure.class);
+            ArrayList<String> addresses = (new Engine(transactionStructure.getPrivateKey()))
+                    .createLoans(transactionStructure);
+            return (new Gson()).toJson(addresses);
         }catch(Exception e){
             return e.toString();
         }

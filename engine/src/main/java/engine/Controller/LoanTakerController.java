@@ -48,7 +48,7 @@ public class LoanTakerController {
             CancelForm cancelForm = (new Gson()).fromJson(cancelFormJson, CancelForm.class);
             log.info("Cancelling ask preloan with address={}", cancelForm.getOfferAddress());
             return (new LoanTaker(cancelForm.getPrivateKey(), env))
-                    .deletePreloanAsk(cancelForm.getOfferAddress());
+                    .deletePreloanAsk(cancelForm.getOfferAddress(), cancelForm.getLedgerAddress());
         }catch(Exception e){
             return e.toString();
         }
@@ -62,6 +62,11 @@ public class LoanTakerController {
         }
         private String privateKey;
         private String offerAddress;
+        private String ledgerAddress;
+
+        public String getLedgerAddress() {
+            return ledgerAddress;
+        }
 
         public String getPrivateKey() {
             return privateKey;

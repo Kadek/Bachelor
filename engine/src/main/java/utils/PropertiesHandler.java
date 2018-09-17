@@ -77,7 +77,7 @@ public class PropertiesHandler {
         Properties prop = new Properties();
         String result = "";
         try {
-            String filename = "application.properties";
+            String filename = "config.properties";
             String workingDir = System.getProperty("user.dir");
             Path path = Paths.get(workingDir, "build", "resources", "main", filename);
             

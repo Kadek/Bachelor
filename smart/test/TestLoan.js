@@ -1,4 +1,5 @@
 var Loan = artifacts.require("Loan");
+var Preloan = artifacts.require("Preloan");
 var BigNumber = require("bignumber.js");
 
 contract('Loan', function(accounts){
@@ -7,54 +8,59 @@ contract('Loan', function(accounts){
       loan = instance;
       return loan.basis.call();
     }).then(function(basis) {
-      assert.equal(basis.valueOf(), 1000, "Default basis is not 1000");
+      assert.equal(basis.valueOf(), 0, "Default basis is not 0");
       return loan.paymentCount.call();
     }).then(function(paymentCount) {
       assert.equal(paymentCount.valueOf(), 0, "Default paymentCount is not 0");
     });
   });
 
-  function testSetters(functionName, capFunctionName, functionValue){
-    it("should set positive " + functionName, function() {
-      return Loan.deployed().then(function(instance){
-        loan = instance;
-        return loan["set" + capFunctionName](functionValue);
-      }).then(function(instance) {
-        return loan[functionName].call();
-      }).then(function(returnValue) {
-        assert.equal(returnValue.valueOf(), functionValue, "Positive " + functionName + " is not set");
-      });
-    });
-
-    it("should not set " + functionName + " more than once", function() {
-      return Loan.deployed().then(function(instance){
-        loan = instance;
-        test = false;
-        return loan["set" + capFunctionName](functionValue);
-      }).catch(function(error) {
-        test = true;
-      }).then(function(value){
-        if(test){
-          assert.equal(1,1,"");
-        }else{
-          assert.equal(1,0, functionName + " is set twice");
-        }
-      });
-    });
-  }
-
   var duration = 7;
   var paymentPeriod = 30;
-  functionNames = ["interestScaled", "interestReciprocal", "scale", "precision", "duration", "paymentPeriod", "collateral"];
-  functionValues = [2000000000, 5, 10000000000, 8, duration, paymentPeriod, 1];
-  for( var i = 0; i < functionNames.length; i++){
+  var basis = 1000;
+  var functionNames = ["interestScaled", "interestReciprocal", "scale", "precision", "duration", "paymentPeriod", "collateral", "side"];
+  var getterFunctionNames = ["giver", "taker", "interestScaled", "interestReciprocal", "scale", "precision", "duration", "paymentPeriod", "collateral"];
+  var functionValues = [
+    [2000000000, 5, 10000000000, 8, duration, paymentPeriod, 1, "2"],
+    [2000000000, 5, 10000000000, 8, duration, paymentPeriod, 1, "1"]
+  ];
+  it("should set the loan properly", async () => {
+    let Bid = await Preloan.new();
+    let Ask = await Preloan.new();
+    contracts = [Bid, Ask];
 
-    functionName = functionNames[i]; 
-    functionValue = functionValues[i];
-    capFunctionName = capitalizeFirstLetter(functionName);
+    for( var i = 0; i < contracts.length; i++){
+      let currentContract = contracts[i];
+      for( var j = 0; j < functionNames.length; j++){
+        functionName = functionNames[j];
+        functionValue = functionValues[i][j];
+        capFunctionName = capitalizeFirstLetter(functionName);
 
-    testSetters(functionName, capFunctionName, functionValue);
-  };
+        await currentContract["set" + capFunctionName](functionValue);
+      };
+    };
+
+    let instance = await Loan.deployed();
+    await instance.sendTransaction({
+          from: accounts[0],
+          value: basis
+        });
+    await instance.setLoan(Ask.address, Bid.address);
+
+    var contractNames = [Bid, Ask, Bid, Ask, Ask, Ask, Ask, Ask, Ask];
+
+    for( var i = 0; i < getterFunctionNames.length; i++){
+      var functionName = getterFunctionNames[j]; 
+      let contractNameInstance = contractNames[j];
+      
+      let loan = await Loan.deployed();
+      let parameter = await loan[functionName]();
+
+      let correctParameter = await contractNameInstance[functionName]();
+
+      assert.equal(parameter.valueOf(), correctParameter.valueOf(), "Loan "+functionName+" is set to "+parameter+" instead of "+correctParameter);
+    };
+  });
 
   it("should start the loan properly", function() {
     return Loan.deployed().then(function(instance){
@@ -122,19 +128,19 @@ contract('Loan', function(accounts){
         return loan.repayment.call();
       }).then(function(repaymentLocal){
         repaymentGlobal = repaymentLocal;
-        return loan.loadRepaymentAccount({value: repaymentGlobal});
+        return loan.sendTransaction({
+          from: accounts[0],
+          value: repaymentGlobal
+        });
       }).then(function(){
         return passTime(paymentPeriod);
       }).then(function(){
-        return loan.repaymentAccount.call();
-      }).then(function(repaymentAccount){
+        var repaymentAccount = web3.eth.getBalance(loan.address);
         assert.equal(repaymentGlobal.valueOf(), repaymentAccount.valueOf(), "Account not filled with repayment");
-        return loan.consumeRepayment({value: repaymentGlobal});
+        return loan.consumeRepayment();
       }).then(function(){
-        return loan.repaymentAccount.call();
-      }).then(function(repaymentAccount){
+        var repaymentAccount = web3.eth.getBalance(loan.address);
         assert.equal(0, repaymentAccount, "Account not emptied of repayment");
-        return loan.repaymentAccount.call();
       });
     });
   }
@@ -146,7 +152,7 @@ contract('Loan', function(accounts){
       return loan.repayment.call();
     }).then(function(repaymentLocal){
       repaymentGlobal = repaymentLocal;
-      return loan.loadRepaymentAccount({value: repaymentGlobal});
+      return loan.transfer({value: repaymentGlobal});
     }).then(function(){
       return passTime(paymentPeriod);
     }).then(function(){

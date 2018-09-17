@@ -4,9 +4,11 @@ contract Ledger {
 
 	address[] public askAddresses;
 	address[] public bidAddresses;
+	uint public counter;
 
 	function addAsk(address askAddress) public {
 		askAddresses.push(askAddress);
+		counter++;
 	}
 
 	function deleteAsk(uint index) public {
@@ -16,6 +18,7 @@ contract Ledger {
 		}
 		delete askAddresses[askAddresses.length-1];
 		askAddresses.length--;
+		counter++;
 	}
 
 	function getAskAddressAtRow(uint index) constant public returns (address){
@@ -28,6 +31,7 @@ contract Ledger {
 
 	function addBid(address bidAddress) public {
 		bidAddresses.push(bidAddress);
+		counter++;
 	}
 
 	function deleteBid(uint index) public {
@@ -37,7 +41,7 @@ contract Ledger {
 		}
 		delete bidAddresses[bidAddresses.length-1];
 		bidAddresses.length--;
-		
+		counter++;		
 	}
 
 	function getBidAddressAtRow(uint index) constant public returns (address){

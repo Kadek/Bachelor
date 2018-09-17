@@ -3,12 +3,13 @@ package engine.Entity.Engine;
 import com.google.gson.Gson;
 import engine.Entity.BlockchainCommunicator;
 import engine.Entity.LedgerHandler;
+import engine.Entity.LoanGiver;
+import engine.Ledger;
+import engine.Loan;
 import engine.Preloan;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -18,7 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.RemoteCall;
+import org.web3j.tx.Contract;
+import org.web3j.tx.ManagedTransaction;
         
 public class Engine extends BlockchainCommunicator{
 
@@ -41,15 +45,24 @@ public class Engine extends BlockchainCommunicator{
         BOTH
     };
     
-    public Engine() throws IOException {
+    public Engine(boolean connectToNetwork) throws IOException {
         super();
-        web3j = connectToDefaultNetwork();
+        web3j = connectToNetwork ? connectToDefaultNetwork() : null;
         credentials = null;
+    }
+    
+    public Engine(final String privateKey) throws IOException {
+        super(privateKey);
+        web3j = connectToDefaultNetwork();
+        credentials = loadCredentials();
     }
 
     public PreloanStructure getSortedOrders(final String ledgerAddress) {
         ArrayList<Preloan> preloans = getAllPreloans(ledgerAddress);
         PreloanStructure structuredPreloans = getStructuredPreloans(preloans);
+        
+        String ledgerCounter = getLedgerCounter(ledgerAddress);
+        structuredPreloans.setLedgerCounter(ledgerCounter);
         return structuredPreloans;
     }    
 
@@ -129,6 +142,19 @@ public class Engine extends BlockchainCommunicator{
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private String getLedgerCounter(String ledgerAddress){
+        
+        LedgerHandler ledgerHandler;
+        String ledgerCounter = "";
+        try {
+            ledgerHandler = new LedgerHandler(web3j);
+            ledgerCounter = ledgerHandler.getLedgerCounter(ledgerAddress);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ledgerCounter;
     }
 
     public ArrayList<MatchData> matchOrders(String orders){
@@ -244,5 +270,84 @@ public class Engine extends BlockchainCommunicator{
         }else{
             return CompareState.NONE;
         }
+    }
+    
+    public ArrayList<String> createLoans(TransactionStructure transactions){
+        ArrayList<String> addresses = new ArrayList<>();
+        
+        log.info("Creating loans");
+        
+        String result = isTransactionConsistent(transactions.getLedgerCounter(), transactions.getLedgerAddress());
+        if(!result.equals("")){
+            addresses.add(result);
+            return addresses;
+        }
+        log.info("Transaction {} is consistent.", transactions.getLedgerCounter());
+        
+        ArrayList<HashMap<String, String>> transactionsRecords = transactions.getTransactions();
+        for(HashMap<String, String> transaction : transactionsRecords){
+            addresses.add(createLoan(transaction, transactions.getLedgerAddress()));
+        }
+        log.info("Loans successfully created.");
+        
+        return addresses;
+    }
+    
+    private String isTransactionConsistent(String ledgerCounter, String ledgerAddress){
+        LedgerHandler ledgerHandler;
+        String currentLedgerCounter;
+        try {
+            ledgerHandler = new LedgerHandler(web3j);
+            currentLedgerCounter = ledgerHandler.getLedgerCounter(ledgerAddress);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+            return "Can't check current transaction number";
+        }
+        if(ledgerCounter.equals(currentLedgerCounter)){
+            return "";
+        }else{
+            return "Current transaction number ("+currentLedgerCounter+") differs from the used one ("+ledgerCounter+")";
+        }
+    }
+    
+    private String createLoan(final HashMap<String, String> transaction, final String ledgerAddress){
+        String bidAddress = transaction.get("bidAddress");
+        String askAddress = transaction.get("askAddress");
+        Preloan bid;
+        Preloan ask;
+        
+        log.info("Deploying loan.");
+        String loanAddress;
+        try {
+            bid = (new LoanGiver(web3j, credentials)).loadPreloan(bidAddress);
+            ask = (new LoanGiver(web3j, credentials)).loadPreloan(askAddress);
+            
+            bid.createLoan(askAddress).send();
+            loanAddress = bid.loanAddress().send();
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+            return "Couldn't create loan.";
+        }
+        log.info("Loan deployed.");
+        
+        log.info("Clearing ledger.");
+        LedgerHandler ledgerHandler;
+        try {
+            ledgerHandler = new LedgerHandler(web3j, credentials);
+            Ledger ledger = ledgerHandler.loadLedgerWithCredentials(ledgerAddress);
+            if(bid.basis().send().compareTo(BigInteger.ZERO) == 0 ){
+                BigInteger index = ledgerHandler.findBidIndex(ledgerAddress, bidAddress);
+                ledger.deleteBid(index).send();
+            }
+            if(ask.basis().send().compareTo(BigInteger.ZERO) == 0 ){
+                BigInteger index = ledgerHandler.findAskIndex(ledgerAddress, askAddress);
+                ledger.deleteAsk(index).send();
+            }
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        log.info("Ledger cleared.");
+        
+        return loanAddress;
     }
 }

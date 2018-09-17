@@ -126,7 +126,7 @@ contract('Ledger integration test', function(accounts){
     }).then(function() {
       return ledger.getAskAddressCount()
     }).then(function(addressesLength) {
-      assert.equal(addressesLength, 1, "Addresses length after cancelling preloan is " + addressesLength + " instead of 0");
+      assert.equal(addressesLength.toString(), 0, "Addresses length after cancelling preloan is " + addressesLength + " instead of 0");
     });
   });
 });

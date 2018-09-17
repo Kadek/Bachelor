@@ -10,10 +10,7 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
-import org.web3j.tx.ReadonlyTransactionManager;
-import org.web3j.tx.TransactionManager;
 import utils.PropertiesHandler;
-import com.google.gson.Gson;
 
 public class LedgerHandler extends BlockchainCommunicator {
     
@@ -40,6 +37,12 @@ public class LedgerHandler extends BlockchainCommunicator {
         credentials = null;
     }
     
+    public LedgerHandler(Web3j web3j, Credentials credentials) throws IOException{
+        super();
+        this.web3j = web3j;
+        this.credentials = credentials;
+    }
+    
     public String createLedger() throws Exception {
         log.info("Deploying ledger smart contract");
         Ledger ledger = Ledger.deploy(
@@ -49,9 +52,18 @@ public class LedgerHandler extends BlockchainCommunicator {
         return ledger.getContractAddress();
     }
     
-    private Ledger loadLedger(final String contractAddress) throws Exception {
+    public Ledger loadLedger(final String contractAddress) throws Exception {
         return loadContractWithoutCredentials(
                 Ledger.class, 
+                web3j, 
+                contractAddress
+        );
+    }
+    
+    public Ledger loadLedgerWithCredentials(final String contractAddress) throws Exception {
+        return loadContractWithCredentials(
+                Ledger.class, 
+                credentials,
                 web3j, 
                 contractAddress
         );
@@ -89,8 +101,8 @@ public class LedgerHandler extends BlockchainCommunicator {
         return bids;
     }
     
-    public BigInteger findAskIndex(final String askAddress) throws Exception{
-        Ledger ledger = loadLedger(getLedgerAddress());
+    public BigInteger findAskIndex(final String ledgerAddress, final String askAddress) throws Exception{
+        Ledger ledger = loadLedger(ledgerAddress);
         
         Integer count = Integer.parseInt(ledger.getAskAddressCount().send().toString());
         for(int i = 0 ; i < count ; i++){
@@ -101,8 +113,8 @@ public class LedgerHandler extends BlockchainCommunicator {
         return new BigInteger(String.valueOf(-1));        
     }
     
-    public BigInteger findBidIndex(final String bidAddress) throws Exception{
-        Ledger ledger = loadLedger(getLedgerAddress());
+    public BigInteger findBidIndex(final String ledgerAddress, final String bidAddress) throws Exception{
+        Ledger ledger = loadLedger(ledgerAddress);
         
         Integer count = Integer.parseInt(ledger.getBidAddressCount().send().toString());
         for(int i = 0 ; i < count ; i++){
@@ -111,6 +123,11 @@ public class LedgerHandler extends BlockchainCommunicator {
                 return new BigInteger(String.valueOf(i));
         }
         return new BigInteger(String.valueOf(-1));        
+    }
+    
+    public String getLedgerCounter(final String ledgerAddress) throws Exception {
+        Ledger ledger = loadLedger(ledgerAddress);    
+        return ledger.counter().send().toString();
     }
 
 }

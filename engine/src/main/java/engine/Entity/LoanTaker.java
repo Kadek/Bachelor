@@ -78,7 +78,11 @@ public class LoanTaker extends BlockchainCommunicator{
                 ManagedTransaction.GAS_PRICE, 
                 Contract.GAS_LIMIT);
         
+        
+        String sideOrdinal = ((Integer)(Side.ASK).ordinal()).toString();
+        preLoan.setSide(new BigInteger(sideOrdinal)).send();
         preLoan.setBasis(new BigInteger(basis)).send();
+        
         preLoan.setInterestScaled(getInterestScaled(interest)).send();
         preLoan.setInterestReciprocal(getInterestReciprocal(interest)).send();
         preLoan.setScale(new BigInteger(scale)).send();
@@ -86,9 +90,6 @@ public class LoanTaker extends BlockchainCommunicator{
         preLoan.setDuration(new BigInteger(duration)).send();
         preLoan.setPaymentPeriod(new BigInteger(paymentPeriod)).send();
         preLoan.setCollateral(new BigInteger(collateral)).send();
-        
-        String sideOrdinal = ((Integer)(Side.ASK).ordinal()).toString();
-        preLoan.setSide(new BigInteger(sideOrdinal)).send();
         log.info("Successfully set parameters for preloan ask.");        
     }
     
@@ -109,28 +110,28 @@ public class LoanTaker extends BlockchainCommunicator{
         log.info("Ledger informed.");        
     }
     
-    public String deletePreloanAsk(String contractAddress) throws Exception {
+    public String deletePreloanAsk(final String contractAddress, final String ledgerAddress) throws Exception {
         log.info("Cancelling preloan ask and informing ledger.");
         
         Preloan preloan = loadPreloan(contractAddress);
-        BigInteger index = findAskIndex(contractAddress);
+        BigInteger index = findAskIndex(contractAddress, ledgerAddress);
         preloan.cancelLoanOffer(index).send();
         
         log.info("Preloan cancelled and Ledger informed.");    
         return "Success";
     }
     
-    private Preloan loadPreloan(final String contractAddress){
+    private Preloan loadPreloan(final String askAddress){
         return loadContractWithCredentials(
                 Preloan.class, 
                 credentials, 
                 web3j, 
-                contractAddress
+                askAddress
         );
     }
 
-    private BigInteger findAskIndex(String askAddress) throws Exception {
+    private BigInteger findAskIndex(final String ledgerAddress, final String askAddress) throws Exception {
         LedgerHandler ledgerHandler = new LedgerHandler();
-        return ledgerHandler.findAskIndex(askAddress);
+        return ledgerHandler.findAskIndex(ledgerAddress, askAddress);
     }
 }

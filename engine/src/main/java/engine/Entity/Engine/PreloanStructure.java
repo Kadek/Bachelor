@@ -17,6 +17,8 @@ import java.util.PriorityQueue;
 
 public class PreloanStructure {
 
+    private String ledgerCounter;
+
     private String classifier;
     private HashMap<String, PreloanStructure> children;
     private PriorityQueue<PreloanData> preloans;
@@ -68,6 +70,13 @@ public class PreloanStructure {
     public PriorityQueue<PreloanData> getPreloans() {
         return preloans;
     }
+    
+    public void setLedgerCounter(String ledgerCounter) {
+        this.ledgerCounter = ledgerCounter;
+    }
 
-
+    public String getLedgerCounter() {
+        return ledgerCounter;
+    }
+    
 }    

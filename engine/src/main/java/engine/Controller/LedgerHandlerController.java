@@ -73,5 +73,18 @@ class LedgerHandlerController{
             return e.toString();
         }
     }
+        
+    @GetMapping("/ledger/getLedgerCounter")
+    public String getLedgerCounter(
+            @RequestParam(value="ledgerAddress", defaultValue="0x0") String ledgerAddress)
+    {
+        try{
+            log.info("Getting ledger counter");
+            String ledgerCounter = (new LedgerHandler()).getLedgerCounter(ledgerAddress);
+            return ledgerCounter;
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
     
 }
