@@ -96,9 +96,11 @@ contract("Preloan integration", function(accounts){
     var loanBasis = web3.eth.getBalance(loanAddress).valueOf();
     var bidBasis = web3.eth.getBalance(Bid.address).valueOf();
     var askBasis = (await Ask.basis()).valueOf();
-    assert.equal(basis, loanBasis, "Loan basis is wrong!");
+    var repayment = (await (await Loan.at(loanAddress)).repayment()).valueOf();
+    assert.equal(loanBasis, 0, "Loan basis is wrong!");
     assert.equal(bidBasis, 0, "Bid is not empty");
     assert.equal(askBasis, 0, "Ask is not empty");
+    assert.equal(repayment, 277, "repayment calculated inproperly");
   });
 });
 

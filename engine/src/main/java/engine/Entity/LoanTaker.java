@@ -2,6 +2,7 @@ package engine.Entity;
 
 import engine.Preloan;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,11 +95,11 @@ public class LoanTaker extends BlockchainCommunicator{
     }
     
     private BigInteger getInterestScaled(String interest){
-        return (new BigInteger(interest)).multiply(new BigInteger(scale));
+        return (new BigDecimal(interest)).multiply(new BigDecimal(scale)).toBigInteger();
     }
     
     private BigInteger getInterestReciprocal(String interest){
-        return (BigInteger.ONE).divide(new BigInteger(interest));
+        return (BigDecimal.ONE).divide(new BigDecimal(interest)).toBigInteger();
     }
         
     private void informLedger(String contractAddress, String ledgerAddress) throws Exception {

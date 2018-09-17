@@ -228,7 +228,6 @@ contract Preloan {
 		require(ask.interestScaled() >= interestScaled);
 
 		Loan loan = new Loan();
-		loan.setLoan(askAddress, address(this));
 		if(ask.basis() >= basis){			
 			address(loan).transfer(basis);
 			ask.adjustBasis(address(this), basis);
@@ -238,6 +237,7 @@ contract Preloan {
 			basis -= ask.basis();
 			ask.adjustBasis(address(this), ask.basis());
 		}
+		loan.setLoan(askAddress, address(this));
 		loan.startLoan();
 		loanAddress = address(loan);
 	}
