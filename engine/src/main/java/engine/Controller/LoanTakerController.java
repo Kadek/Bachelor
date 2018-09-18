@@ -54,6 +54,44 @@ public class LoanTakerController {
         }
     }
     
+        
+    @PostMapping("/taker/fillRepaymentAccount")
+    public String consumeRepayment(
+            @RequestBody String fillRepaymentAccountJson)
+    {
+        try{
+            FillRepaymentAccount fillRepaymentAccount = (new Gson()).fromJson(fillRepaymentAccountJson, FillRepaymentAccount.class);
+            log.info("Filling repayment account of a loan with address {} with amount {}", 
+                    fillRepaymentAccount.getLoanAddress(), fillRepaymentAccount.getAmount());
+            return (new LoanTaker(fillRepaymentAccount.getPrivateKey(), env))
+                    .fillRepaymentAccount(
+                            fillRepaymentAccount.getLoanAddress(),
+                            fillRepaymentAccount.getAmount()
+                    );
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+    
+    private class FillRepaymentAccount{
+         
+        private String privateKey;
+        private String loanAddress;
+        private String amount;
+
+        public String getAmount() {
+            return amount;
+        }
+
+        public String getPrivateKey() {
+            return privateKey;
+        }
+
+        public String getLoanAddress() {
+            return loanAddress;
+        }
+    }
+    
     private class CancelForm{
 
         public CancelForm(String privateKey, String offerAddress) {

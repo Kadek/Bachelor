@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import engine.Entity.LoanGiver;
@@ -39,7 +38,7 @@ public class LoanGiverController {
         }
     }
         
-    @PostMapping("/taker/cancelOffer")
+    @PostMapping("/giver/cancelOffer")
     public String cancelOffer(
             @RequestBody String cancelFormJson)
     {
@@ -50,6 +49,34 @@ public class LoanGiverController {
                     .deletePreloanBid(cancelForm.getOfferAddress(), cancelForm.getLedgerAddress());
         }catch(Exception e){
             return e.toString();
+        }
+    }
+        
+    @PostMapping("/giver/consumeRepayment")
+    public String consumeRepayment(
+            @RequestBody String consumeRepaymentJson)
+    {
+        try{
+            ConsumeRepayment consumeRepayment = (new Gson()).fromJson(consumeRepaymentJson, ConsumeRepayment.class);
+            log.info("Consuming repayment of a loan with address={}", consumeRepayment.getLoanAddress());
+            return (new LoanGiver(consumeRepayment.getPrivateKey(), env))
+                    .consumeRepayment(consumeRepayment.getLoanAddress());
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+    
+    private class ConsumeRepayment{
+         
+        private String privateKey;
+        private String loanAddress;
+
+        public String getPrivateKey() {
+            return privateKey;
+        }
+
+        public String getLoanAddress() {
+            return loanAddress;
         }
     }
     

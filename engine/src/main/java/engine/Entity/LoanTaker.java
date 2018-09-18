@@ -4,11 +4,14 @@ import engine.Preloan;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
         
@@ -134,5 +137,29 @@ public class LoanTaker extends BlockchainCommunicator{
     private BigInteger findAskIndex(final String ledgerAddress, final String askAddress) throws Exception {
         LedgerHandler ledgerHandler = new LedgerHandler();
         return ledgerHandler.findAskIndex(ledgerAddress, askAddress);
+    }
+    
+    public String fillRepaymentAccount(String loanAddress, String amount) {
+        log.info("Filling repayment account");
+        try {
+            String publicAddress = getPublicAddress(credentials);
+            String balance = web3j.ethGetBalance(publicAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
+            log.info("Balance of address {} before filling is {}", publicAddress, balance);
+            balance = web3j.ethGetBalance(loanAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
+            log.info("Balance of a loan on address {} before filling is {}", loanAddress, balance);
+            
+            sendFunds(loanAddress, amount, web3j, credentials);
+            log.info("Repayment account filled successfully");
+
+            balance = web3j.ethGetBalance(publicAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
+            log.info("Balance of address {} after filling is {}", publicAddress, balance);
+            balance = web3j.ethGetBalance(loanAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
+            log.info("Balance of a loan on address {} after filling is {}", loanAddress, balance);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(LoanTaker.class.getName()).log(Level.SEVERE, null, ex);
+            return "Failure";
+        }
+        
+        return "Success";
     }
 }

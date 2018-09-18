@@ -1,17 +1,21 @@
 package engine.Entity;
 
+import engine.Loan;
 import engine.Preloan;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.web3j.crypto.Credentials;
+import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.RawTransaction;
 import org.web3j.crypto.TransactionEncoder;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
@@ -99,7 +103,7 @@ public class LoanGiver extends BlockchainCommunicator{
         String sideOrdinal = ((Integer)(Side.BID).ordinal()).toString();
         preLoan.setSide(new BigInteger(sideOrdinal)).send();
         
-        sendFunds(contractAddress, basis);
+        sendFunds(contractAddress, basis, web3j, credentials);
         
         preLoan.setInterestScaled(getInterestScaled(interest)).send();
         preLoan.setInterestReciprocal(getInterestReciprocal(interest)).send();
@@ -154,14 +158,37 @@ public class LoanGiver extends BlockchainCommunicator{
         return ledgerHandler.findBidIndex(ledgerAddress, bidAddress);
     }
     
-    private void sendFunds(final String contractAddress, final String basis) throws InterruptedException, ExecutionException{
-        EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(
-            credentials.getAddress(), DefaultBlockParameterName.LATEST).sendAsync().get();
-        BigInteger nonce = ethGetTransactionCount.getTransactionCount();
-        RawTransaction rawTransaction  = RawTransaction.createEtherTransaction(
-            nonce, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT, contractAddress, new BigInteger(basis));
-        byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
-        String hexValue = Numeric.toHexString(signedMessage);
-        EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).sendAsync().get();
+    public String consumeRepayment(String loanAddress) {
+        log.info("Consuming repayment");
+        try {
+            String publicAddress = getPublicAddress(credentials);
+            String balance = web3j.ethGetBalance(publicAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
+            log.info("Balance of address {} before consumption is {}", publicAddress, balance);
+            balance = web3j.ethGetBalance(loanAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
+            log.info("Balance of a loan on address {} before consumption is {}", loanAddress, balance);
+
+            Loan loan = loadLoan(loanAddress);
+            loan.consumeRepayment(BigInteger.ZERO).send();            
+            log.info("Repayment consumed successfully");
+
+            balance = web3j.ethGetBalance(publicAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
+            log.info("Balance of address {} after consumption is {}", publicAddress, balance);
+            balance = web3j.ethGetBalance(loanAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
+            log.info("Balance of a loan on address {} after consumption is {}", loanAddress, balance);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(LoanGiver.class.getName()).log(Level.SEVERE, null, ex);
+            return "Failure";
+        }
+        return "Success";
+    }   
+    
+    private Loan loadLoan(final String loanAddress){
+        return loadContractWithCredentials(
+            Loan.class,
+            credentials,
+            web3j, 
+            loanAddress
+        );
     }
+    
 }

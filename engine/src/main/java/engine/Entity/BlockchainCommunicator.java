@@ -5,16 +5,24 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.crypto.Credentials;
+import org.web3j.crypto.ECKeyPair;
+import org.web3j.crypto.RawTransaction;
+import org.web3j.crypto.TransactionEncoder;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
 import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.tx.TransactionManager;
+import org.web3j.utils.Numeric;
 
 public class BlockchainCommunicator {
     
@@ -102,6 +110,24 @@ public class BlockchainCommunicator {
         
         log.info("{} successfully loaded.", T.toString());
         return contract;
+    }
+    
+    protected String getPublicAddress(Credentials credentials){
+        return credentials.getAddress();
+    }
+    
+    protected void sendFunds(
+            final String contractAddress, final String basis,
+            Web3j web3j, Credentials credentials
+    ) throws InterruptedException, ExecutionException{
+        EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(
+            credentials.getAddress(), DefaultBlockParameterName.LATEST).sendAsync().get();
+        BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+        RawTransaction rawTransaction  = RawTransaction.createEtherTransaction(
+            nonce, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT, contractAddress, new BigInteger(basis));
+        byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials);
+        String hexValue = Numeric.toHexString(signedMessage);
+        EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).sendAsync().get();
     }
    
 }
