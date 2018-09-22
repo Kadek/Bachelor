@@ -13,15 +13,16 @@ contract('Preloan', function(accounts){
   });
 
   function testSetters(functionName, capFunctionName, functionValue){
-    it("should set positive " + functionName, function() {
-      return Preloan.deployed().then(function(instance){
-        loan = instance;
-        return loan["set" + capFunctionName](functionValue);
-      }).then(function(instance) {
-        return loan[functionName].call();
-      }).then(function(returnValue) {
-        assert.equal(returnValue.valueOf(), functionValue, "Positive " + functionName + " is not set");
-      });
+    it("should set positive " + functionName, async ()  => {
+      loan = await Preloan.deployed();
+
+      if(functionName === "collateral"){
+        await loan["set" + capFunctionName](functionValue, "0x0");
+      }else{
+        await loan["set" + capFunctionName](functionValue);
+      }
+      var returnValue = await loan[functionName].call();
+      assert.equal(returnValue.valueOf(), functionValue, "Positive " + functionName + " is not set");
     });
 
     it("should not set " + functionName + " more than once", function() {
@@ -80,7 +81,11 @@ contract("Preloan integration", function(accounts){
         functionValue = functionValues[i][j];
         capFunctionName = capitalizeFirstLetter(functionName);
 
-        await currentContract["set" + capFunctionName](functionValue);
+        if(functionName === "collateral"){
+          await currentContract["set" + capFunctionName](functionValue, "0x0");
+        }else{
+          await currentContract["set" + capFunctionName](functionValue);
+        }
       };
     };
 

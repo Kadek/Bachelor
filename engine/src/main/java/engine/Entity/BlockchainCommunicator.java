@@ -116,6 +116,10 @@ public class BlockchainCommunicator {
         return credentials.getAddress();
     }
     
+    protected String getPublicKey(Credentials credentials){
+        return credentials.getEcKeyPair().getPublicKey().toString();
+    }
+    
     protected void sendFunds(
             final String contractAddress, final String basis,
             Web3j web3j, Credentials credentials

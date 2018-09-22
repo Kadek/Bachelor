@@ -36,7 +36,11 @@ contract('Loan', function(accounts){
         functionValue = functionValues[i][j];
         capFunctionName = capitalizeFirstLetter(functionName);
 
-        await currentContract["set" + capFunctionName](functionValue);
+        if(functionName === "collateral"){
+          await currentContract["set" + capFunctionName](functionValue, "0x0");
+        }else{
+          await currentContract["set" + capFunctionName](functionValue);
+        }
       };
     };
 

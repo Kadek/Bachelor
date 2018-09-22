@@ -1,9 +1,19 @@
 pragma solidity ^0.4.24;
 import './SafeMath.sol';
+import './Deposit.sol';
+import './Legal.sol';
+import './Preloan.sol';
 
 contract Loan {
 
 	using SafeMath for uint;
+
+	enum LoanState {
+		UNDEFINED,
+		SET,
+		STARTED,
+		BLOCKED
+	}
 
 	enum Collateral {
 		UNDEFINED,
@@ -12,7 +22,7 @@ contract Loan {
 		DEPOSIT
 	}
 
-	address giver;
+	address public giver;
 	address public taker;
 	uint public basis;
 	uint public interestScaled;
@@ -22,12 +32,15 @@ contract Loan {
 	uint public duration;
 	uint public paymentPeriod;
 	Collateral public collateral;
+	address public collateralAddress;
 
 	uint public repayment;
 	uint public latestPaymentTimestamp;
 	uint public paymentCount;
+	LoanState public loanState;
 
 	function setLoan(address ask, address bid) public{
+		require(loanState == LoanState.UNDEFINED);
 		Preloan askContract = Preloan(ask);
 		Preloan bidContract = Preloan(bid);
 
@@ -42,8 +55,10 @@ contract Loan {
 		duration = askContract.duration();
 		paymentPeriod = askContract.paymentPeriod();
 		collateral = Collateral(uint(askContract.collateral()));
+		collateralAddress = askContract.collateralAddress();
 
 		paymentCount = 0;
+		loanState = LoanState.SET;
 	}
 
 	// allows the contract to receive ether
@@ -51,10 +66,12 @@ contract Loan {
 	}
 
 	function startLoan() public {
+		require(loanState == LoanState.SET);
 		calculateRepayments();
 		scheduleRepayments();
 
 		transferMoney();
+		loanState = LoanState.STARTED;
 	}
 
 	function transferMoney() public payable{
@@ -83,177 +100,26 @@ contract Loan {
 	}
 
 	function consumeRepayment() public payable {
+		require(loanState == LoanState.STARTED);
 		require(msg.sender == giver);
 		require(now.sub(latestPaymentTimestamp) > paymentPeriod);
 		require(paymentCount < duration);
-		giver.transfer(repayment);
-		latestPaymentTimestamp = latestPaymentTimestamp.add(paymentPeriod);
-		paymentCount++;
-	}
-}
 
-contract Preloan {
+		if(address(this).balance < repayment){
+			if(collateral == Collateral.DEPOSIT){
+				Deposit deposit = Deposit(collateralAddress);
+				deposit.withdraw(this);
+			}else if(collateral == Collateral.LEGAL){
+				Legal legal = Legal(collateralAddress);
+				legal.withdraw(this);
+			}
+			loanState = LoanState.BLOCKED;
 
-	using SafeMath for uint;
-
-	enum LoanState {
-		OFFER,
-		CANCELLED
-	}
-
-	enum Collateral {
-		UNDEFINED,
-		NONE,	
-		LEGAL,
-		DEPOSIT
-	}
-
-	enum Side {
-		UNDEFINED,
-		ASK,
-		BID
-	}
-
-	address public giver;
-	address public ledgerAddress;
-	uint public basis;
-	uint public interestScaled;
-	uint public interestReciprocal;
-	uint public scale;
-	uint public precision;
-	uint public duration;
-	uint public paymentPeriod;
-	Collateral public collateral;
-	LoanState public loanState;
-	Side public side;
-	uint public timeCreated;
-
-	address public loanAddress;
-
-	constructor () payable {
-		giver = msg.sender;
-		loanState = LoanState.OFFER;	
-	}
-
-	function () external payable {
-		require(basis == 0);
-		require(side == Side.BID);
-		basis = msg.value;
-	}
-
-	function setBasis(uint _basis) public {
-		require(basis == 0);
-		require(side == Side.ASK);
-		basis = _basis;
-	}
-
-	function setInterestScaled(uint _interestScaled) public {
-		require(interestScaled == 0);
-		interestScaled = _interestScaled;
-	}
-
-	function setInterestReciprocal(uint _interestReciprocal) public {
-		require(interestReciprocal == 0);
-		interestReciprocal = _interestReciprocal;
-	}
-
-	function setScale(uint _scale) public {
-		require(scale == 0);
-		scale = _scale;
-	}
-
-	function setPrecision(uint _precision) public {
-		require(precision == 0);
-		precision = _precision;
-	}
-
-	function setDuration(uint _duration) public {
-		require(duration == 0);
-		duration = _duration;
-	}
-
-	function setPaymentPeriod(uint _paymentPeriod) public {
-		require(paymentPeriod == 0);
-		paymentPeriod = _paymentPeriod;
-	}
-
-	function setCollateral(Collateral _collateral) public {
-		require(collateral == Collateral.UNDEFINED);
-		collateral = _collateral;
-	}
-
-	function setSide(Side _side) public {
-		require(side == Side.UNDEFINED);
-		side = _side;
-	}
-
-	function cancelLoanOffer(uint index) public {
-		require(msg.sender == giver);
-
-		require(loanState == LoanState.OFFER);
-		loanState = LoanState.CANCELLED;
-
-		Ledger ledger = Ledger(ledgerAddress);
-		if(side == Side.ASK){
-			ledger.deleteAsk(index);
 		}else{
-			ledger.deleteBid(index);
-		}	
-
-		selfdestruct(giver);
-	}
-
-	function informLedger(address incomingLedgerAddress) public {
-		require(ledgerAddress == 0);
-		require((side == Side.ASK) || (side == Side.BID));
-
-		Ledger ledger = Ledger(incomingLedgerAddress);
-		if(side == Side.ASK){
-			ledger.addAsk(this);
-		}else{
-			ledger.addBid(this);
+			giver.transfer(repayment);
+			latestPaymentTimestamp = latestPaymentTimestamp.add(paymentPeriod);
+			paymentCount++;
 		}
 
-		ledgerAddress = incomingLedgerAddress;
-		timeCreated = now;
 	}
-
-	function getAddress() constant public returns (address){
-		return this;
-	}
-
-	function createLoan(address askAddress) public{
-		require(side == Side.BID);
-		Preloan ask = Preloan(askAddress);
-		require(ask.interestScaled() >= interestScaled);
-
-		Loan loan = new Loan();
-		if(ask.basis() >= basis){			
-			address(loan).transfer(basis);
-			ask.adjustBasis(address(this), basis);
-			basis = 0;
-		}else{
-			address(loan).transfer(ask.basis());
-			basis -= ask.basis();
-			ask.adjustBasis(address(this), ask.basis());
-		}
-		loan.setLoan(askAddress, address(this));
-		loan.startLoan();
-		loanAddress = address(loan);
-	}
-
-	function adjustBasis(address bidAddress, uint adjustment) public {
-		require(side == Side.ASK);
-		Preloan bid = Preloan(bidAddress);
-		require(interestScaled >= bid.interestScaled());
-
-		basis = basis.sub(adjustment);
-	}
-}
-
-contract Ledger {
-	function addAsk(address askAddress) public;
-    function addBid(address bidAddress) public;
-    function deleteAsk(uint index) public;
-    function deleteBid(uint index) public;
 }

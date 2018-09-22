@@ -48,10 +48,11 @@ public class LoanTaker extends BlockchainCommunicator{
             final String interest,
             final String duration,
             final String collateral,
-            final String ledgerAddress
+            final String ledgerAddress,
+            final String collateralAddress
     ) throws Exception{  
         String contractAddress = deployLoanRequest();
-        setParameters(contractAddress, basis, interest, duration, collateral);        
+        setParameters(contractAddress, basis, interest, duration, collateral, collateralAddress);        
         informLedger(contractAddress, ledgerAddress);
         
         return contractAddress;
@@ -72,7 +73,8 @@ public class LoanTaker extends BlockchainCommunicator{
             final String basis,
             final String interest,
             final String duration,
-            final String collateral
+            final String collateral,
+            final String collateralAddress
     ) throws Exception{
         log.info("Setting parameters for preloan ask.");
         
@@ -93,7 +95,8 @@ public class LoanTaker extends BlockchainCommunicator{
         preLoan.setPrecision(new BigInteger(precision)).send();
         preLoan.setDuration(new BigInteger(duration)).send();
         preLoan.setPaymentPeriod(new BigInteger(paymentPeriod)).send();
-        preLoan.setCollateral(new BigInteger(collateral)).send();
+        BigInteger collateralBig = new BigInteger(collateral);
+        preLoan.setCollateral(collateralBig,  collateralAddress).send();
         log.info("Successfully set parameters for preloan ask.");        
     }
     

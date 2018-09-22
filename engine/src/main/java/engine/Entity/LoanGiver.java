@@ -5,23 +5,15 @@ import engine.Preloan;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.web3j.crypto.Credentials;
-import org.web3j.crypto.ECKeyPair;
-import org.web3j.crypto.RawTransaction;
-import org.web3j.crypto.TransactionEncoder;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
-import org.web3j.utils.Numeric;
         
 public class LoanGiver extends BlockchainCommunicator{
 
@@ -111,7 +103,7 @@ public class LoanGiver extends BlockchainCommunicator{
         preLoan.setPrecision(new BigInteger(precision)).send();
         preLoan.setDuration(new BigInteger(duration)).send();
         preLoan.setPaymentPeriod(new BigInteger(paymentPeriod)).send();
-        preLoan.setCollateral(new BigInteger(collateral)).send();
+        preLoan.setCollateral(new BigInteger(collateral), "0x0").send();
         
         log.info("Successfully set parameters for preloan bid.");        
     }

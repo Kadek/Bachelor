@@ -95,4 +95,40 @@ public class LoanInfoController {
             return e.toString();
         }
     }
+        
+    @GetMapping("/loanInfo/getLoanState")
+    public String getLoanState(
+            @RequestParam(value="loanAddress", defaultValue="0") String loanAddress) 
+    {
+        try{
+            log.info("Checking loans state of a loan with address {}", loanAddress);
+            return (new LoanInfo(loanAddress)).getLoanState();
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+        
+    @GetMapping("/loanInfo/getGiver")
+    public String getGiver(
+            @RequestParam(value="loanAddress", defaultValue="0") String loanAddress) 
+    {
+        try{
+            log.info("Checking giver address of a loan with address {}", loanAddress);
+            return (new LoanInfo(loanAddress)).getGiver();
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+        
+    @GetMapping("/loanInfo/getTaker")
+    public String getTaker(
+            @RequestParam(value="loanAddress", defaultValue="0") String loanAddress) 
+    {
+        try{
+            log.info("Checking taker address of a loan with address {}", loanAddress);
+            return (new LoanInfo(loanAddress)).getTaker();
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
 }

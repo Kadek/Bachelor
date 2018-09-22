@@ -33,7 +33,8 @@ public class LoanTakerController {
                     loanForm.getInterest(), 
                     loanForm.getDuration(), 
                     loanForm.getCollateral(), 
-                    loanForm.getLedgerAddress()
+                    loanForm.getLedgerAddress(),
+                    loanForm.getCollateralAddress()
             );
         }catch(Exception e){
             return e.toString();
@@ -117,15 +118,6 @@ public class LoanTakerController {
     
     private class LoanForm{
 
-        public LoanForm(String privateKey, String basis, String interest, String duration, String collateral, String ledgerAddress) {
-            this.privateKey = privateKey;
-            this.basis = basis;
-            this.interest = interest;
-            this.duration = duration;
-            this.collateral = collateral;
-            this.ledgerAddress = ledgerAddress;
-        }
-
         public String getPrivateKey() {
             return privateKey;
         }
@@ -155,5 +147,10 @@ public class LoanTakerController {
         private String duration;
         private String collateral;
         private String ledgerAddress;
+        private String collateralAddress;
+
+        public String getCollateralAddress() {
+            return collateralAddress;
+        }
     }
 }

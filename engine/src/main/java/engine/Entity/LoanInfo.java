@@ -60,4 +60,16 @@ public class LoanInfo extends BlockchainCommunicator {
         return web3j.ethGetBalance(contractAddress, DefaultBlockParameterName.LATEST).send().getBalance().toString();
     }
 
+    public String getLoanState() throws Exception {
+        return loan.loanState().send().toString();
+    }
+
+    public String getGiver() throws Exception {
+        return loan.giver().send();
+    }
+
+    public String getTaker() throws Exception {
+        return loan.taker().send();
+    }
+
 }
