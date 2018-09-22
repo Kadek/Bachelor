@@ -8,6 +8,7 @@ contract Legal {
 	using SafeMath for uint;
 
 	string public information;
+	string public AESKey;
 
 	address public taker;
 	address public disputedLoanAddress;
@@ -15,10 +16,12 @@ contract Legal {
 
 	constructor (
 		address _taker,
-		string _information
+		string _information,
+		string _AESKey
 	) payable public {
 		taker = _taker;
 		information = _information;
+		AESKey = _AESKey;
 	}
 
 	function withdraw(address loanAddress) public {

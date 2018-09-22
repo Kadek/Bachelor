@@ -38,7 +38,7 @@ public class CollateralController {
             CollateralForm collateralForm = (new Gson()).fromJson(collateralFormJson, CollateralForm.class);
             log.info("Creating legal collateral for address {}", collateralForm.getTaker());
             return (new LegalEntity(collateralForm.getPrivateKey())).createLegal(
-                    collateralForm.getLegalInformation(), collateralForm.getLegalPublicKey());
+                    collateralForm.getLegalInformation(), collateralForm.getLegalAESKey());
         }catch(Exception e){
             return e.toString();
         }
@@ -83,15 +83,15 @@ public class CollateralController {
         public String getLegalInformation() {
             return legalInformation;
         }
-        public String getLegalPublicKey() {
-            return legalPublicKey;
+        public String getLegalAESKey() {
+            return legalAESKey;
         }
         
         private String taker;
         private String privateKey;
         private String depositValue;
         private String legalInformation;
-        private String legalPublicKey;
+        private String legalAESKey;
 
     }
 }

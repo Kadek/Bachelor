@@ -1,23 +1,8 @@
 package engine.Entity;
 
-import engine.Deposit;
 import engine.Legal;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.logging.Level;
-import javax.crypto.Cipher;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.crypto.Credentials;
@@ -46,7 +31,7 @@ public class LegalEntity extends BlockchainCommunicator {
     
     public String createLegal(
             final String legalInformation,
-            final String publicKey
+            final String AESKey
     ) throws Exception {
         log.info("Deploying deposit smart contract");
         Legal legal = Legal.deploy(
@@ -54,37 +39,11 @@ public class LegalEntity extends BlockchainCommunicator {
             ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT,
             BigInteger.ZERO,
             getPublicAddress(credentials),
-            legalInformation
+            legalInformation,
+            AESKey
         ).send();
         log.info("Contract deployed successfully");
         return legal.getLegalAddress().send();
-    }
-    
-    private String encrypt (
-            final String plainInformation,
-            final String publicKey
-    ){
-        ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-        try {
-            String filePath = new File("").getAbsolutePath();
-            log.info("Searching for script in dir: {}", filePath);
-            engine.eval(new FileReader("src/main/java/utils/crypto.js"));
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(LegalEntity.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        Invocable invocable = (Invocable)engine;
-        String result = "";
-        log.info("Encrypting string: {}", plainInformation);
-        try {
-            result = (String)invocable.invokeFunction("encrypt", plainInformation, publicKey);
-        } catch (ScriptException ex) {
-            java.util.logging.Logger.getLogger(LegalEntity.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
-            java.util.logging.Logger.getLogger(LegalEntity.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        log.info("Encrypted string into: {}", result);
-        return result;
     }
     
     private Legal loadLegal(final String legalAddress){
@@ -98,6 +57,11 @@ public class LegalEntity extends BlockchainCommunicator {
     public String getLegalInformation(final String legalAddress) throws Exception{
         Legal legal = loadLegal(legalAddress);
         return legal.information().send();
+    }
+    
+    public String getAESKey(final String legalAddress) throws Exception{
+        Legal legal = loadLegal(legalAddress);
+        return legal.AESKey().send();
     }
     
     public String getUnblockedFlag(final String legalAddress) throws Exception{
