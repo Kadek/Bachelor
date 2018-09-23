@@ -49,3 +49,8 @@ gradle-app.setting
 /smart/node_modules/
 /smart/solidity-windows/
 /help/
+/GUI/nbproject/private/
+/GUI/build/
+/GUI/dist/
+/engineGUI/.nb-gradle/
+/engineGUI/build/
