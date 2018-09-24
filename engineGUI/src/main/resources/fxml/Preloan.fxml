@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.PreloanController">
+   <children>
+      <Pane fx:id="formPlaceholder" layoutY="54.0" prefHeight="346.0" prefWidth="451.0" />
+      <VBox alignment="BOTTOM_CENTER" layoutX="452.0" layoutY="203.0" prefHeight="197.0" prefWidth="188.0" styleClass="sidebar" stylesheets="@../styles.css">
+         <children>
+            <JFXButton fx:id="createButton" onAction="#createButtonClicked" styleClass="navButton" stylesheets="@../styles.css" text="Create">
+               <VBox.margin>
+                  <Insets bottom="30.0" />
+               </VBox.margin>
+            </JFXButton>
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" layoutX="452.0" layoutY="54.0" prefHeight="150.0" prefWidth="188.0" styleClass="sidebar" stylesheets="@../styles.css">
+         <children>
+            <JFXButton fx:id="askButton" onAction="#askButtonClicked" styleClass="sidebarButton" stylesheets="@../styles.css" text="Ask" />
+            <JFXButton fx:id="bidButton" onAction="#bidButtonClicked" styleClass="sidebarButton" stylesheets="@../styles.css" text="Bid" />
+            <JFXButton fx:id="ledgerButton" onAction="#ledgerButtonClicked" styleClass="sidebarButton" stylesheets="@../styles.css" text="Ledger" />
+         </children>
+      </VBox>
+      <fx:include source="navbar.fxml" />
+   </children>
+</AnchorPane>

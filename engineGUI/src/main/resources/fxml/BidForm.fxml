@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="preloanForm" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.BidFormController">
+   <children>
+      <JFXTextField fx:id="loanBasis" layoutX="34.0" layoutY="31.0" prefHeight="25.0" prefWidth="373.0" promptText="Basis of your loan" />
+      <JFXTextField fx:id="loanDuration" layoutX="34.0" layoutY="68.0" prefHeight="25.0" prefWidth="373.0" promptText="Duration of your loan" />
+      <JFXTextField fx:id="privateKey" layoutX="34.0" layoutY="182.0" prefHeight="25.0" prefWidth="373.0" promptText="Private key of your wallet" />
+      <JFXTextField fx:id="loanInterest" layoutX="34.0" layoutY="104.0" prefHeight="25.0" prefWidth="373.0" promptText="Interest of your loan" />
+      <JFXTextField fx:id="ledgerAddress" layoutX="34.0" layoutY="142.0" prefHeight="25.0" prefWidth="373.0" promptText="Address of a ledger" />
+      <JFXComboBox fx:id="collateralInput" layoutX="34.0" layoutY="233.0" promptText="Collateral type" />
+   </children>
+</Pane>

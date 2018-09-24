@@ -1,31 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
+<?import com.jfoenix.controls.JFXButton?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 
-<AnchorPane id="AnchorPane" prefHeight="54.0" prefWidth="373.0" style="-fx-background-color: #696969;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.navbarController">
-    <children>
-      <HBox alignment="CENTER" layoutX="1.0" prefHeight="54.0" prefWidth="373.0">
-         <children>
-              <Button fx:id="button" onAction="#handleButtonAction" prefWidth="72.0" text="Accounts">
-               <HBox.margin>
-                  <Insets right="10.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="button1" onAction="#handleButtonAction" prefWidth="72.0" text="Loans">
-               <HBox.margin>
-                  <Insets right="10.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="button11" onAction="#handleButtonAction" prefWidth="72.0" text="Exchange">
-               <HBox.margin>
-                  <Insets right="10.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="button12" onAction="#handleButtonAction" prefWidth="72.0" text="Accounts" />
-         </children>
-      </HBox>
-    </children>
+<AnchorPane prefHeight="54.0" prefWidth="640.0" styleClass="navbar" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.navbarController">
+   <children>
+      <JFXButton fx:id="preloanButton" buttonType="RAISED" layoutX="27.0" layoutY="15.0" onAction="#preloanButtonClicked" prefWidth="72.0" styleClass="navButton" stylesheets="@../styles.css" text="Preloan" />
+      <JFXButton buttonType="RAISED" layoutX="209.0" layoutY="15.0" styleClass="navButton" stylesheets="@../styles.css" text="B" />
+      <JFXButton buttonType="RAISED" layoutX="117.0" layoutY="15.0" styleClass="navButton" stylesheets="@../styles.css" text="C" />
+      <JFXButton buttonType="RAISED" layoutX="301.0" layoutY="15.0" styleClass="navButton" stylesheets="@../styles.css" text="D" />
+   </children>
 </AnchorPane>

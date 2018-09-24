@@ -16,12 +16,21 @@ class LedgerHandlerController{
     private static final Logger log = LoggerFactory.getLogger(LedgerHandlerController.class);
         
     @PostMapping("/ledger/createLedger")
-    public String createLedger(@RequestBody String privateKey){
+    public String createLedger(@RequestBody String privateKeyFormJson){
         try{
+            PrivateKeyForm privateKeyForm = (new Gson()).fromJson(privateKeyFormJson, PrivateKeyForm.class);
             log.info("Creating a new ledger");
-            return (new LedgerHandler(privateKey)).createLedger();
+            return (new LedgerHandler(privateKeyForm.getPrivateKey())).createLedger();
         }catch(Exception e){
             return e.toString();
+        }
+    }
+    
+    private class PrivateKeyForm {
+        private String privateKey;
+
+        public String getPrivateKey() {
+            return privateKey;
         }
     }
         

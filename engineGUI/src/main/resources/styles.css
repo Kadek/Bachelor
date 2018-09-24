@@ -1,0 +1,44 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 24, 2018, 1:09:57 PM
+    Author     : adas
+*/
+
+.navButton {
+     -jfx-button-type: RAISED;
+     -fx-text-fill: black;
+     -fx-pref-width: 75px;
+     -fx-background-color: #03DAC5;
+}
+
+.navbar {
+    -fx-background-color: #3800B3;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.sidebar {
+    -fx-background-color: #6200EE;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+.sidebarButton {
+    -fx-pref-width: 188px;
+    -fx-pref-height: 50px;
+    -fx-border-color: black;
+    -fx-border-width: 0 0 1 0;
+}
+
+.preloanForm {
+    -fx-background-color: #ffffff;
+    -fx-pref-width: 452px;
+    -fx-pref-height: 346px;
+    -fx-alignment: bottom-right;
+}
+
+.selected {
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.8), 100, 0, 0, 0);
+}
