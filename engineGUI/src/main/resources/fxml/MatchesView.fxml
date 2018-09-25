@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXScrollPane?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="preloanForm" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Exchange.MatchesController">
+   <children>
+      <JFXScrollPane layoutX="104.0" layoutY="84.0" prefHeight="253.0" prefWidth="320.0">
+         <children>
+            <JFXTreeTableView fx:id="matchesTable" prefHeight="288.0" prefWidth="329.0" />
+         </children>
+      </JFXScrollPane>
+      <JFXButton fx:id="createButton" layoutX="14.0" layoutY="14.0" onAction="#createButtonClicked" prefHeight="25.0" prefWidth="89.0" styleClass="navButton" stylesheets="@../styles.css" text="Create" />
+      <JFXTextField fx:id="privateKeyInput" layoutX="104.0" layoutY="14.0" prefHeight="25.0" prefWidth="322.0" promptText="Private key of your wallet" />
+      <JFXButton fx:id="updateButton" layoutX="14.0" layoutY="49.0" onAction="#updateButtonClicked" prefHeight="25.0" prefWidth="89.0" styleClass="navButton" stylesheets="@../styles.css" text="Update" />
+      <JFXTextField fx:id="ledgerAddressInput" layoutX="103.0" layoutY="49.0" prefHeight="25.0" prefWidth="322.0" promptText="Ledger address" />
+   </children>
+</Pane>

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.PreloanController">
+<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Preloan.PreloanController">
    <children>
       <Pane fx:id="formPlaceholder" layoutY="54.0" prefHeight="346.0" prefWidth="451.0" />
       <VBox alignment="BOTTOM_CENTER" layoutX="452.0" layoutY="203.0" prefHeight="197.0" prefWidth="188.0" styleClass="sidebar" stylesheets="@../styles.css">

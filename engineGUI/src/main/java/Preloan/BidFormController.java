@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gui;
+package Preloan;
 
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
+import gui.Utils;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -20,9 +21,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author adas
  */
-public class AskFormController implements Initializable, FormController {
+public class BidFormController implements Initializable, FormController{
         
-    private static final Logger log = LoggerFactory.getLogger(AskFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(BidFormController.class);
     
     @FXML
     private JFXTextField loanBasis;
@@ -36,8 +37,6 @@ public class AskFormController implements Initializable, FormController {
     private JFXTextField ledgerAddress;
     @FXML
     private JFXComboBox collateralInput;
-    @FXML
-    private JFXTextField collateralAddress;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -45,7 +44,7 @@ public class AskFormController implements Initializable, FormController {
         collateralInput.getItems().add(new Label("Deposit"));
         collateralInput.getItems().add(new Label("Legal"));
     }
-
+    
     @Override
     public HashMap<String, String> getData() {
         HashMap<String, String> data = new HashMap<>();
@@ -57,7 +56,7 @@ public class AskFormController implements Initializable, FormController {
         
         String selectedCollateralText = ((Label)collateralInput.getSelectionModel().getSelectedItem()).getText();
         data.put("collateral", Utils.collateralMapping.get(selectedCollateralText));
-        data.put("collateralAddress", collateralAddress.getText());
         return data;
-    }    
+    }   
+    
 }

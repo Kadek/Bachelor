@@ -346,4 +346,73 @@ public class Engine extends BlockchainCommunicator{
         
         return loanAddress;
     }
+    
+    public AccumulatedOrders getAccumulatedOrders(final String ledgerAddress){
+        
+        PreloanStructure preloanStructure = getSortedOrders(ledgerAddress);
+        AccumulatedOrders orders = new AccumulatedOrders();
+        orders.allocateMaps();
+        
+        PreloanStructure asks = preloanStructure.getChildren().get("1");
+        fillOrders(orders, asks, orders.getAsks());
+        
+        PreloanStructure bids = preloanStructure.getChildren().get("2");
+        fillOrders(orders, bids, orders.getBids());
+        
+        flattenOrders(orders);
+        
+        return orders;
+    }
+    
+    private void fillOrders(
+            AccumulatedOrders orders, 
+            PreloanStructure preloanStructure, 
+            HashMap<String, ArrayList<AccumulatedOrder>> map
+    ){
+        for(String collateral : preloanStructure.getChildren().keySet()){
+            PreloanStructure collateralPreloanStructure = preloanStructure.getChildren().get(collateral);
+            for(String duration : collateralPreloanStructure.getChildren().keySet()){
+                PreloanStructure durationPreloanStructure = collateralPreloanStructure.getChildren().get(duration);
+                
+                Iterator iterator = durationPreloanStructure.getPreloans().iterator();
+                ArrayList<AccumulatedOrder> partialOrders = new ArrayList<>();
+                while(iterator.hasNext()){
+                    PreloanData preloanData = (PreloanData) iterator.next();
+                    partialOrders.add(new AccumulatedOrder(preloanData.interest.toString(), preloanData.basis.toString()));
+                }
+                orders.add(map, collateral+"-"+duration, partialOrders);
+                
+            }
+        }        
+    }
+    
+    private void flattenOrders(
+            AccumulatedOrders orders
+    ){
+        for(String key : orders.getAsks().keySet()){
+            flatten(orders.getAsks().get(key));
+        }
+        for(String key : orders.getBids().keySet()){
+            flatten(orders.getBids().get(key));
+        }
+    }
+    
+    private void flatten(
+            ArrayList<AccumulatedOrder> orders
+    ){
+        AccumulatedOrder previousOrder = null;
+        for(int i = 0; i < orders.size(); i++){
+            AccumulatedOrder order = orders.get(i);
+            if(previousOrder == null || !previousOrder.getInterest().equals(order.getInterest())){
+                previousOrder = order;
+            }else{
+                String sum = (new BigInteger(previousOrder.getCumulatedBasis()).add(
+                        new BigInteger(order.getCumulatedBasis()))).toString(); 
+                previousOrder.setCumulatedBasis(sum);
+                orders.remove(i);
+                i--;
+            }
+        }
+    }
 }
+

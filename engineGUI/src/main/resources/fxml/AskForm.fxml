@@ -4,7 +4,7 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="preloanForm" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.AskFormController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="preloanForm" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Preloan.AskFormController">
    <children>
       <JFXTextField fx:id="loanBasis" layoutX="34.0" layoutY="31.0" prefHeight="25.0" prefWidth="373.0" promptText="Basis of your loan" />
       <JFXTextField fx:id="loanDuration" layoutX="34.0" layoutY="68.0" prefHeight="25.0" prefWidth="373.0" promptText="Duration of your loan" />

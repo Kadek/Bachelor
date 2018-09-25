@@ -26,18 +26,30 @@ public class navbarController {
            
     @FXML
     private Button preloanButton;
+    @FXML
+    private Button exchangeButton;
     
     @FXML
     private void preloanButtonClicked(ActionEvent event) throws IOException {
-        log.info("The scene Preloan is being started.");
+        loadScene("Preloan");
+    }
+    
+    @FXML
+    private void exchangeButtonClicked(ActionEvent event) throws IOException {
+        loadScene("Exchange");
+    }
+    
+    private void loadScene(final String sceneName) throws IOException{
+        log.info("The scene {} is being started.", sceneName);
         
         Stage stage = (Stage) preloanButton.getScene().getWindow();
         
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Preloan.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/"+sceneName+".fxml"));
         Scene scene =  new Scene(root);
         stage.setScene(scene);
-        stage.show();
+        stage.show();        
     }
+    
        
     
 }

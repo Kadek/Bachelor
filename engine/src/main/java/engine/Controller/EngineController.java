@@ -1,6 +1,7 @@
 package engine.Controller;
 
 import com.google.gson.Gson;
+import engine.Entity.Engine.AccumulatedOrders;
 import engine.Entity.Engine.Engine;
 import engine.Entity.Engine.MatchData;
 import engine.Entity.Engine.PreloanStructure;
@@ -28,6 +29,19 @@ public class EngineController {
             log.info("Getting sorted orders from ledger with address {}", ledgerAddress);
             PreloanStructure preloanStructure = (new Engine(true)).getSortedOrders(ledgerAddress);
             return (new Gson()).toJson(preloanStructure);
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+    
+    @GetMapping("/engine/getAccumulatedOrders")
+    public String getAccumulatedOrders(
+            @RequestParam(value="ledgerAddress", defaultValue="0x0") String ledgerAddress) 
+    {
+        try{
+            log.info("Getting accumulated orders from ledger with address {}", ledgerAddress);
+            AccumulatedOrders accumulatedOrders = (new Engine(true)).getAccumulatedOrders(ledgerAddress);
+            return (new Gson()).toJson(accumulatedOrders);
         }catch(Exception e){
             return e.toString();
         }

@@ -3,16 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gui;
+package Preloan;
 
 import com.google.gson.Gson;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialogLayout;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import gui.Utils;
+import gui.navbarController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -22,7 +17,6 @@ import java.util.concurrent.Executors;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -30,8 +24,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +58,7 @@ public class PreloanController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        currentButton = "ask";
+        currentButton = "Ask";
         urls = new HashMap<String, String>(){{
            put("Ask", Utils.getDomain()+"/taker/requestLoan");     
            put("Bid", Utils.getDomain()+"/giver/offerLoan");
@@ -117,7 +109,7 @@ public class PreloanController implements Initializable{
             protected String call() throws Exception {
                 String preloanAddress = null;
                 try {
-                    preloanAddress = sendPOST(JSON_URL, getParameters());
+                    preloanAddress = Utils.sendPOST(log, JSON_URL, getParameters());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -128,42 +120,14 @@ public class PreloanController implements Initializable{
         executorService.submit(createPreloan);
         createPreloan.setOnSucceeded((WorkerStateEvent t) -> {
             log.info("Successfully created {} with address {}", currentButton, createPreloan.getValue());
-            showInfo(createPreloan.getValue());
+            Utils.showInfo(pane, createPreloan.getValue());
         });
-    }
-    
-    private void showInfo(final String info){
-        JFXDialogLayout content = new JFXDialogLayout();
-        content.setBody(new Text(info));
-        StackPane stackPane = new StackPane();
-        stackPane.autosize();
-        JFXDialog dialog = new JFXDialog(stackPane, content, JFXDialog.DialogTransition.CENTER, true);
-        JFXButton button = new JFXButton("Okay");	
-        button.setOnAction(new EventHandler<ActionEvent>() {
-		@Override
-		public void handle(ActionEvent event) {
-			dialog.close();
-		}
-	});
-	button.setButtonType(com.jfoenix.controls.JFXButton.ButtonType.RAISED);
-        content.setActions(button);
-        
-        pane.getChildren().add(stackPane);        
-        dialog.show();
-    }
+    }   
     
     private String getParameters(){
         log.info("Fetching data from controller {}", currentButton);
         String data = (new Gson()).toJson(currentFormController.getData());
         log.info("Fetched data is {}", data);
         return data;
-    }
-    
-    private String sendPOST(final String JSON_URL, final String parameters) throws UnirestException{
-        log.info("Sending request to {}", JSON_URL);
-        HttpResponse<String> stringResponse = Unirest.post(JSON_URL)
-            .header("Content-Type", "application/json")
-            .header("accept", "application/json").body(parameters).asString();
-        return stringResponse.getBody();   
     }
 }
