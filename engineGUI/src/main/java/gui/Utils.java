@@ -24,10 +24,23 @@ import org.slf4j.Logger;
  * @author adas
  */
 public class Utils {
+
+
     public static String getDomain(){
         return "http://localhost:8080";
     }
     
+    public static HashMap<String, String>  reverseLoanStateMapping = new HashMap<String, String>(){{
+       put("0", "Undefined");
+       put("1", "Set");
+       put("2", "Started");
+       put("3", "Blocked");
+    }};
+    public static HashMap<String, String>  reverseCollateralMapping = new HashMap<String, String>(){{
+       put("1", "None");
+       put("2", "Deposit");
+       put("3", "Legal");
+    }};
     public static HashMap<String, String> collateralMapping = new HashMap<String, String>(){{
        put("None","1");
        put("Deposit","2");

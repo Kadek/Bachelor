@@ -48,6 +48,18 @@ public class LoanInfoController {
         }
     }
         
+    @GetMapping("/loanInfo/getScale")
+    public String getScale(
+            @RequestParam(value="loanAddress", defaultValue="0") String loanAddress) 
+    {
+        try{
+            log.info("Checking scale of a loan with address {}", loanAddress);
+            return (new LoanInfo(loanAddress)).getScale();
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+        
     @GetMapping("/loanInfo/getDuration")
     public String getDuration(
             @RequestParam(value="loanAddress", defaultValue="0") String loanAddress) 
@@ -127,6 +139,18 @@ public class LoanInfoController {
         try{
             log.info("Checking taker address of a loan with address {}", loanAddress);
             return (new LoanInfo(loanAddress)).getTaker();
+        }catch(Exception e){
+            return e.toString();
+        }
+    }
+        
+    @GetMapping("/loanInfo/getCollateral")
+    public String getCollateral(
+            @RequestParam(value="loanAddress", defaultValue="0") String loanAddress) 
+    {
+        try{
+            log.info("Checking collateral of a loan with address {}", loanAddress);
+            return (new LoanInfo(loanAddress)).getCollateral();
         }catch(Exception e){
             return e.toString();
         }

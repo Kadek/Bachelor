@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Loans.LoansController">
+   <children>
+      <Pane fx:id="formPlaceholder" layoutY="54.0" prefHeight="346.0" prefWidth="451.0">
+         <children>
+            <JFXTextField fx:id="loanAddressInput" layoutX="115.0" layoutY="40.0" prefHeight="25.0" prefWidth="251.0" promptText="Loan address" />
+            <JFXButton fx:id="loadButton" layoutX="29.0" layoutY="40.0" onAction="#loadButtonClicked" styleClass="navButton" stylesheets="@../styles.css" text="Load" />
+            <Label layoutX="29.0" layoutY="81.0" text="Basis: " />
+            <Label layoutX="29.0" layoutY="98.0" text="Interest:" />
+            <Label layoutX="29.0" layoutY="115.0" text="Scale:" />
+            <Label layoutX="29.0" layoutY="132.0" text="Duration: " />
+            <Label layoutX="29.0" layoutY="149.0" text="Collateral: " />
+            <Label layoutX="29.0" layoutY="165.0" text="Repayment:" />
+            <Label layoutX="29.0" layoutY="182.0" text="PaymentCount:" />
+            <Label layoutX="29.0" layoutY="199.0" text="Loan state: " />
+            <Label layoutX="29.0" layoutY="216.0" text="Account amount: " />
+            <Label fx:id="basisOutput" layoutX="135.0" layoutY="81.0" />
+            <Label fx:id="interestOutput" layoutX="135.0" layoutY="98.0" />
+            <Label fx:id="scaleOutput" layoutX="135.0" layoutY="115.0" />
+            <Label fx:id="durationOutput" layoutX="135.0" layoutY="132.0" prefHeight="17.0" prefWidth="60.0" />
+            <Label fx:id="collateralOutput" layoutX="135.0" layoutY="149.0" />
+            <Label fx:id="repaymentOutput" layoutX="135.0" layoutY="165.0" />
+            <Label fx:id="paymentCountOutput" layoutX="135.0" layoutY="182.0" />
+            <Label fx:id="loanStateOutput" layoutX="135.0" layoutY="199.0" />
+            <Label fx:id="accountAmountOutput" layoutX="135.0" layoutY="216.0" prefHeight="17.0" />
+            <JFXButton fx:id="consumeButton" layoutX="29.0" layoutY="249.0" onAction="#consumeButtonClicked" styleClass="navButton" stylesheets="@../styles.css" text="Consume" />
+            <JFXTextField fx:id="privateKeyInput" layoutX="115.0" layoutY="249.0" prefHeight="25.0" prefWidth="251.0" promptText="Private key" />
+            <JFXButton fx:id="refillButton" layoutX="29.0" layoutY="289.0" onAction="#refillButtonClicked" styleClass="navButton" stylesheets="@../styles.css" text="Refill" />
+            <JFXTextField fx:id="refillAmountInput" layoutX="115.0" layoutY="289.0" prefHeight="25.0" prefWidth="251.0" promptText="Refill amount" />
+         </children></Pane>
+      <VBox alignment="CENTER" layoutX="452.0" layoutY="54.0" prefHeight="346.0" prefWidth="188.0" styleClass="sidebar" stylesheets="@../styles.css" />
+      <fx:include source="navbar.fxml" />
+   </children>
+</AnchorPane>

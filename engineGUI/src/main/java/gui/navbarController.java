@@ -28,6 +28,8 @@ public class navbarController {
     private Button preloanButton;
     @FXML
     private Button exchangeButton;
+    @FXML
+    private Button loansButton;
     
     @FXML
     private void preloanButtonClicked(ActionEvent event) throws IOException {
@@ -37,6 +39,16 @@ public class navbarController {
     @FXML
     private void exchangeButtonClicked(ActionEvent event) throws IOException {
         loadScene("Exchange");
+    }
+    
+    @FXML
+    private void loansButtonClicked(ActionEvent event) throws IOException {
+        loadScene("Loans");
+    }
+    
+    @FXML
+    private void collateralButtonClicked(ActionEvent event) throws IOException {
+        loadScene("Collateral");
     }
     
     private void loadScene(final String sceneName) throws IOException{

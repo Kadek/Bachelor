@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane id="AnchorPane" fx:id="pane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Collateral.CollateralController">
+   <children>
+      <Pane fx:id="formPlaceholder" layoutY="54.0" prefHeight="346.0" prefWidth="451.0" />
+      <VBox alignment="CENTER" layoutX="452.0" layoutY="154.0" prefHeight="246.0" prefWidth="188.0" styleClass="sidebar" stylesheets="@../styles.css" />
+      <VBox alignment="CENTER" layoutX="452.0" layoutY="54.0" prefHeight="100.0" prefWidth="188.0" styleClass="sidebar" stylesheets="@../styles.css">
+         <children>
+            <JFXButton fx:id="depositButton" onAction="#depositButtonClicked" styleClass="sidebarButton" stylesheets="@../styles.css" text="Deposit" />
+            <JFXButton fx:id="legalButton" onAction="#legalButtonClicked" styleClass="sidebarButton" stylesheets="@../styles.css" text="Legal" />
+         </children>
+      </VBox>
+      <fx:include source="navbar.fxml" />
+   </children>
+</AnchorPane>

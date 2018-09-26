@@ -72,4 +72,12 @@ public class LoanInfo extends BlockchainCommunicator {
         return loan.taker().send();
     }
 
+    public String getScale() throws Exception {
+        return loan.scale().send().toString();
+    }
+
+    public String getCollateral() throws Exception {
+        return loan.collateral().send().toString();
+    }
+
 }

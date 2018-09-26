@@ -7,7 +7,7 @@
    <children>
       <JFXButton fx:id="preloanButton" buttonType="RAISED" layoutX="27.0" layoutY="15.0" onAction="#preloanButtonClicked" prefWidth="72.0" styleClass="navButton" stylesheets="@../styles.css" text="Preloan" />
       <JFXButton fx:id="exchangeButton" buttonType="RAISED" layoutX="114.0" layoutY="15.0" onAction="#exchangeButtonClicked" styleClass="navButton" stylesheets="@../styles.css" text="Exchange" />
-      <JFXButton buttonType="RAISED" layoutX="202.0" layoutY="15.0" styleClass="navButton" stylesheets="@../styles.css" text="C" />
-      <JFXButton buttonType="RAISED" layoutX="290.0" layoutY="15.0" styleClass="navButton" stylesheets="@../styles.css" text="D" />
+      <JFXButton fx:id="loansButton" buttonType="RAISED" layoutX="202.0" layoutY="15.0" onAction="#loansButtonClicked" styleClass="navButton" stylesheets="@../styles.css" text="Loans" />
+      <JFXButton fx:id="collateralButton" buttonType="RAISED" layoutX="290.0" layoutY="15.0" onAction="#collateralButtonClicked" styleClass="navButton" stylesheets="@../styles.css" text="Collateral" />
    </children>
 </AnchorPane>
