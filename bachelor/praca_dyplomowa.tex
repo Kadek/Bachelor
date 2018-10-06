@@ -139,15 +139,6 @@ But looking for specific hashes is only one way of controlling block creation ra
 After the subject of mining has been explained we encounter another problem. We know that after a block has been mined it has to be propagated throughout the network as to be actually accepted by the network.
 What happens when in a large network two blocks are mined at the same time and both are able to propagate only through a part of the network before they collide? Then at least the majority of the miners ( that is 51\% of all computing power) has to decide which block to link to the blockchain and which to throw out. It is very important that a solid method of choosing the block by majority is used in a blockchain implementation because otherwise a malicious party could take over the network in some way or another by forcing his blocks with his transactions. It it also possible that the declined block will not be thrown away but will start living his own life in a sequence of events that are known as \textit{forks}. What follows is that one blockchain is split into two smaller ones which live from then on their own lives. Most of the time forks happen because a new version of the blockchain implementation is being deployed and not everyone wants this new version. This situation has occured with Bitcoin multiple times and the whole subject is worth thesis on its own.
 
-Possible topics to elaborate:
-\begin{itemize}
-\item Comparing blockchain to sql and nosql? (trustlessness, no scalability)
-\item What coins are there? (Bitcoin, Ethereum)
-\item When to use blockchain? ( use cases )
-\item How to take over the network?
-\item Scalability solutions?
-\end{itemize}
-
 \section{Ethereum}
 
 Ethereum is one of many implementations of blockchain technology. It differs from the many other ones in that it is as a next step in the evolution of blockchain. Learning from Bitcoin mistakes and trying to create a flawless general-purpose blockchain implementation, Vitalik Buterin together with other programmers have published a paper outlying desing for Ethereum \cite{Ethereum}.  The new cryptocurrency has been officially released in year 2015. 
@@ -239,64 +230,96 @@ So far two possible loans have been discussed. The first called normal loans whi
 
 An interesting though experiment could follow if we imagine that by some clever research we discover that some market movement will happen with a probability of 100\%. Now lets say the price change is denoted by Y. No matter what size Y is we could always leverage ourself so much that as a result we would earn millions of millions of dollars. So long we are able to get the interest rate lower than the relative price movement we are able to change one thousand USD into a sum big enough to cover all imaginable life expenses. All of that would happen only because we had the certainty thanks to information. That is a reason a finance person would say we live in an information era.
 
-Of course cryptocurrencies could not leave such a lucrative area of the financial world aside and a multitude of different companies serving leverage services has appeared. Below are presented two of them.
+Of course cryptocurrencies could not leave such a lucrative area of the financial world aside and a multitude of different companies serving leverage services has appeared. Below is presented the most interesting case the other ones are left untouched as they mostly use the same techniques as in normal loans. One key concept that has to be introduced here is that of a \textit{stablecoin}. As proven already multiple times in this paper cryptocurrencies are very volatile. The problem that ensues is that such instability of currencies results in an instability of companies and deals basing on those currencies. Solution invented for that problem is exactly what one would call a stablecoin. That is, a coin whose value is fixed at some certain value. Currently, the title of the most widely used stablecoin is held by \textit{Tether}, where value of one Tether is fixed at 1 dollar. The fixed ratio is achieved by restricting the possibility of mining new Tethers to central party and holding exact sum of USD on the central party's real-life bank account. One can see that Tether simply exchanges the decentralization aspect of blockchain for the stability. An action deemed nonsensical by many as the whole idea of trustlessness completely evaporates.
 
-\textit{Maker} is company which created a cryptocurrenct called \textit{DAI} \cite{makerdao}. 
-What is stablecoin?
-How does leverage work?
-What coins have they ICOed?
-How do they earn?
-\url{https://makerdao.com/}
-
-
-How does leverage work?
-Lending bot?
-How do they earn?
-\url{https://poloniex.com/}
+\textit{Maker} is company which created a cryptocurrency called \textit{DAI} \cite{makerdao} and this cryptocoin is also a stablecoin. The difference between DAI and Tether is that DAI is not centralized in any way. To explain how stability is achieved here one has to look at the general loan granting process. To borrow a loan using DAI you have to deposit some Ethereum in a special smart contract called collateralized debt position(CDP). Then you are able to withdraw DAI from CDP. The value of DAI withdrawn has to be smaller than the value of Ether you have stored. This process is called over-collateralization. Thanks to this process your DAI is always pegged to an equivalent of 1 Ethereum because you simply switch your Ethereum to DAI using smart contract. If Ethereum price changes the possible amount of DAI you can withdraw from CDP will also change. Finally, when your Ether stored on CDP will not be enough to cover the currently possessed DAI the contract gets liquidated. Your DAI and CDP are destroyed and the Ether comes back to you decreased by a liquidation fee ( most times 13\% ). On the other hand if everything goes right you give back the DAI plus interest later and can take your Ether back. One may ask now, what for should I use this scheme if as a result I will just receive different currency of which value will be lower than my deposit? To answer this question we go one step further. Lets assume we have taken the loan and exchanged Ether for DAI. Now we take the DAI to some exchange and buy Ether for it. We use this Ether to increase our over-collateralization and take more DAI. We can repeat the process and every time we will be able to increase the Ether collateral by a fraction of previous increase. The process will finally stop because the fraction will be miniscule. But in the end we may end up with twice as much Ether stored on our CDP than what we have started with. Now if the price of Ether increases we revert the whole process but this time we can buy the DAI for a better price than we sell it. Finally, our Ethere is more valuable and we have more Ether. But if the price falls down then we could end up liquidated and lose on value and on quantity of Ether. The whole financial process is reminiscent of rehypothecation used in the real-life financial world by banks to leverage and which has been one of many reasons for the financial crisis of 2008 to happen. The difference now is that DAI is on blockchain and follows the rules of publication of every transaction thus every action can be traced and reacted upon. In the year 2008 must of the contracts and deals were totally obfuscated and made the investors commit uninformed transactions. DAI could be treated as one of pearls of the blockchain technology, granting stability but leaving the decentralization and trustlessness aspect untouched. Of course, there is much doubt whether the whole project will take off. Following the process described above is even harder than understanding it and thus horrid user experience could a nail to the grave for the project. Moreover, the idea being quite fresh it is still doubted whether everything is secure and if it just a matter of time for the malicious agents to find a loophole in the system and put it to ruin. The only safe choice right now is to wait.
 
 \section{Loan automation}
-\url{https://www.othera.io/}
+
+The last position on our list of major blockchain projects impacting the financial loan world will touch upon corporate solutions. All of the aforementioned chapters focused on companies whose business model resembles Software as a Service (SAAS). That is the loan company is a separate entity that simply provides some kind of GUI or API through which we can interact with the loan service. An area not explored yet is one that would resemble Infrastructure as a Service (IAAS). In this case, the blockchain company would partly integrate their services with processes of client's company. For example, a bank could ask to transform their retail loan processing into one using blockchain but at the same time it should still integrate with other systems such as bookkeeping, trading or risk quantification. We can see that what is needed here is not simply API or GUI but a whole solution tailored to this specific firm's needs.
+
+The blockchain market has not evolved yet to hold many companies which could provide services of such magnitude. Nevertheless, we can see some companies basing their first footholds in this domain. One of such companies is \textit{Othera} \cite{othera}.  Being mostly still in development there is not much news coverage on it and being focused on corporate clients it is hard to acquire any informations on test usages. The general idea though is to create two big platforms, one which would focus on loan business and a second which would allow for exchange of cryptocurrencies and tokens. The systems would integrate with clients in an appropriate way to their business and let everyone partake in the trades. Benefits stemming from this integration would be an increase in liquidity thanks to new loan markets and new routes for the flow of capital. Othera itself would earn on fees and contracts for integrating new clients into the system. As good as the whole idea sounds there is still little to be said about the reality given that Othera is first of it's kind and still has not properly started. It would be wise to observe the future developments and occasionally check if this specific branch of the market is gaining momentum.
 
 %-----------------
 % Software design
 %-----------------
 \chapter{Software design}
 
+Not every system has to be designed before being implemented. Especially if it's destiny it to never be used by anyone outside the creator or if the aim of the system is to make life of everyone using and supporting it as painful as possible. The system created for the purpose of this thesis does not fulfil either one of those requirements and thus a specification and an architectural design had been created before the construction  began.
+
 \section{Loans}
-One loan offer on an exchange will consist of following parameters:
+One loan offer on an exchange will consist of following parameters, which will be specified by the user before every deal:
 \begin{itemize}
 \item \textbf{Basis}: Size of the loan denominated in Ethereum.
 \item \textbf{Duration}: The time after which the whole loan should be paid back together with interest. Depicted per predefined amount of days.
 \item \textbf{Interest}: Percentage of the loan basis which has to be additionally paid by loan taker. Calculated per predefined amount of days.
-\item \textbf{Collateral}: Information whether the loan is backed by a third party and has a low probability of going default. For example loan taker with no evidence to back his repayment probability will have only access to loans with collateral parameter being equal to None. At the same time loan taker with his loan being backed by a special bank agreement whereas there is a deposit with amount equal to the loan basis and interest incurred which is connected to a smart contract will have access to loans with collateral being equal to Yes.
+\item \textbf{Collateral}: Information whether the loan is backed by a third party and has a low probability of going default. For example loan taker with no evidence to back his repayment probability will have only access to loans with collateral parameter being equal to None. At the same time loan taker with his loan being backed by a special bank agreement will have access to loans with collateral being equal to Yes. The deposit granted by bank agreement will have an amount equal to the loan basis plus interest incurred. Additionally, the deposit will be a smart contract connected to the loan smart contract.
+\item \textbf{Collateral address}: If some kind of collateral will be specified an accompanying address of a smart contract serving the purpose of this address has to be specified. 
 \end{itemize}
 
-The process of buying and selling loans will have the same characteristics as the one seen on the stock exchange. 
+Besides the user specified arguments the loan will be also customized according to the properties held in a properties file held inside the system. The arguments are:
+\begin{itemize}
+\item \textbf{Scale}: Due to properties of Soliditiy language which are described in the chapter \ref{solidity} all of computations done in system will be done using integers. That means values of decimal representations have to be scaled up so that they become integers. The scale factor is used across the program to maintain correctness of computations done.
+\item \textbf{Precision}: Also coming from Solidity peculiarities the exponential function will be calculated using Binomial Expansion. \textit{Precision} is an additional variable that exactly determines the number of iterations of for loop calculating the approximation.
+\item \textbf{Payment Period}: Used by duration processing to determine if enough time has passed for the next repayments to be processed. The value has to be given in miliseconds as the time on blockchain is represented in UNIX format.
+\end{itemize}
 
-That is loan ask whose size exceeds size of one respective loan bid will automatically cover the second identical loan bid. For example loan taker A asks for a loan of 1 ETH. There are two identical offers by loan provider B and C both equal to 0.5 ETH. The matching will automatically buy for A both loans from B and C.
-
-Moreover, if loan taker asks for a loan of interest higher than the lowest present on the market he will be sold the loan with the lowest interest. For example loan taker asks for a loan of interest 2\%. There are loans on the market being bid with both interest of 2\% and 1\%. The loan of 1\% will be sold to the loan taker.
-
-In terms of repayments the loan will function as an amortized loans. That is, the repayments will be constant with principal amount being paid back increasing and the interest amount decreasing. The formula for computing the installments looks as follows:
+The process of buying and selling loans will have the same characteristics as the one seen on the stock exchange. That is loan ask whose size exceeds size of one respective loan bid will automatically cover the second identical loan bid. For example loan taker A asks for a loan of 1 ETH. There are two identical offers by loan provider B and C both equal to 0.5 ETH. The matching will automatically buy for A both loans from B and C. Moreover, if loan taker asks for a loan of interest higher than the lowest present on the market he will be sold the loan with the lowest interest. For example loan taker asks for a loan of interest 2\%. There are loans on the market being bid with both interest of 2\% and 1\%. The loan of 1\% will be sold to the loan taker. In terms of repayments the loan will function as an amortized loans. That is, the repayments will be constant with principal amount being paid back increasing and the interest amount decreasing. The formula for computing the installments looks as follows:
 \[C = \frac{rP}{1 - \frac{1}{(1+r)^n}}\]
 Where C is monthly installment, r is interest rate per month, P is principal amount/basis and n is a duration of a loan in periods equal to predefined amount of days.
 
 \section{Types of users}
 
-The project provides for three types of possible actors. They are as follows:
-\begin{itemize}
-\item \textbf{Loan providers}: Any user with spare Ethereum and access to the application. Such person bids his loan offer and once the loan is sold automatic processes backed by smart contracts care for repayments.
-\item \textbf{Loan takers}: User who has fulfilled required information inquires and can be assured of that at least one of the methods of repayment can be exercised on him. The methods are:
+The project provides for three types of possible actors. 
+
+\textbf{Loan providers}: Any user with spare Ethereum and access to the application. Such person bids his loan offer with specific parameters. At the same time the funds are transfered to the smart contract create by bid offer. After the creation of bid the loan giver queries the matching engine to look for any matches to the offers being present. If it some are found he confirms the creation of transactions and the loan smart contracts are created. Finally he can query the loan every repayment period for the repayments made by loan taker to be transferred to loan giver's account. If a query is sent and the funds are not sufficent for the predetermined repayment than the loan is blocked and collateral procedures step in. Those are described in section \ref{processes}.
+
+Why are the funds sent already during bid creation and not creation of actual laon? It would not be possible to transfer funds later when the loan is created without explicit consent of loan giver. For the consent to be passed the loan giver would have to sign the transaction with his private key and as a consequence he could block the whole transaction until he does it. In the end, it has been decided that the cost of freezing funds inside loan bid is lower than the cost of blocked transactions. After all the loan bid can be freely cancelled.
+
+\textbf{Loan takers}: User who lacks funds at the moment and is willing to sign a contract granting him those funds and obligating him to repay them increased by interest at later time. Loan taker creates loan ask in which it is specified what type of loan he is willing to take upon himself. Having little to no funds he is only obliged to pay for the transaction cost of creating loan ask. Loan taker has the possibility to specify collateral type he is willing to grant. In return he can expect lower interest rates accordingly to the risk level he assure of. If some kind of collateral is specified he also has to specify address of a smart contract fulfilling role of this collateral. There are possible collateral options:
 \begin{enumerate}
-\item Regular individual refilling of his repayment account.
-\item Usage of a collateral deposit from a third party.
-\item Following legal procedures by bailiff of a country where the loan taker is located.
+\item None: Meaning the loan taker grants no assurance that loan giver will receive any kind of his value back in case of default.
+\item Deposit: That is usage of a collateral deposit from a third party. The deposit has to cover the whole value of loan, that is principal plus all of accrued interest. Example of such real life case using this option is following. Close friend of a loan taker has enough funds to grant him the loan but is not willing to waste time on care for the whole loan repayment process. He is willing to create a back up deposit because that will cost him no time. He can later withdraw the fund if the loan is successfully repaid. If the unfortunate happens and the deposit it granted to the loan giver then the deposit maker can pursue the loan taker as he knows him personally. 
+\item Legal informations: The middle option in respect to risk is granting the loan giver a possibility to pursue legal procedures after the loan goes default. For this to happen a designed procedure happens. The loan taker goes to a notary and asks him to create a smart contract containing his personal information. The notary encrypts the information with some key designed for encrypting big chunks of data and then uses his public key to encrypt the data key. Both the encrypted data and encrypted data key are stored in smart contract described as smart contract for legal procedures. The data has to be encrypted because it's publicly accessible on the blockchain. If loan goes to default a flag is set on the smart contract for legal procedures. The notary can then grant the loan giver the private key to decrypt data key, which in turn will be used to decrypt the data. The data will be used to follow legal procedures by bailiff of a country where the loan taker is located.
 \end{enumerate}
-\item \textbf{Authorities}: Third parties which for example serve the role of a collateral deposit or bailiff chasing the loan taker. This user has the possibility to refill the account of the loan takers repayment account.
-\end{itemize}
+
+\textbf{Authorities}: Third parties which create the collateral smart contracts used by loan taker. In the case of deposit it will be a person having enough funds to cover whole loan expenses. He will create the deposit smart contract, transfer fund to it and grant the address of this smart contract to loan taker. The deposit maker can also withdraw his funds if the deposit is not being used. It is expected that the deposit maker will take the risk of backing loan taker because he has the ability to reclaim the money which are present outside of blockchain.
+
+The second scenario uses notary who confirms the legal informations of a loan taker and encrypts it. He then creates a smart contract for legal procedures containing all of the required data except for his private key. This scenario includes also bailiffs which chase the loan taker after having received the required information. It is worth mentioning of the flaws this scenario possesses. For example, it is required that the API for creating smart contract for legal procedures is held only by the notaries and that those notaries will not let the access escape. Otherwise, anyone could create their own smart contracts for legal procedures and put anything inside it. The second problem that could happen is legal jurisdiction of the loan taker. It could so happen that there are no bailiff services there. Overall, the legal scenario requires that there exists a general trust in the third parties and breaks the trustlessness aspect of blockchain from this side.
 
 
-\section{Processes}
+\section{Processes} \label{processes}
+
+It is required that all of the processes composing the whole system will be carefully planned. This way any sort of high level misconfigurations can be pointed out and fixed. The processes in this work are presented using BPMN notation and are accompanied by short notes explaining more intricate concepts.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/loan_processing.png}
+\end{center}
+	\caption{Loan processing}
+	\label{ethereum}
+\end{figure}
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/loan_taker.png}
+\end{center}
+	\caption{Loan taker flow}
+	\label{ethereum}
+\end{figure}
+
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/loan_giver.png}
+\end{center}
+	\caption{Loan giver flow}
+	\label{ethereum}
+\end{figure}
+
 
 \section{Requirements}
 The complete system should provide following functions:
@@ -325,7 +348,6 @@ The complete system should provide following functions:
 
 \section{Architecture}
 
-\section{Visuals}
 %-----------------
 % Software implementation
 %-----------------
@@ -336,7 +358,7 @@ What is Geth?
 What is ganache-cli?
 
 
-\section{Solidity}
+\section{Solidity} \label{solidity}
 
 How to compile?
 What is truffle?
@@ -357,6 +379,7 @@ Solidity tests?
 
 How to compile?
 
+\section{Visuals}
 
 \section{Completion verification}
 How to compile?
@@ -377,6 +400,13 @@ How to compile?
 \bibitem{RPC}{Access date: 02.10.2018, \url{https://github.com/ethereum/wiki/wiki/JSON-RPC}}
 \bibitem{ethlend}{Access date: 03.10.2018, \url{https://ethlend.io/#/main}}
 \bibitem{btcpop}{Access date: 04.10.2018, \url{https://btcpop.co/}}
+\bibitem{bitbond}{Access date: 04.10.2018, \url{https://www.bitbond.com/}}
+\bibitem{credible}{Access date: 04.10.2018, \url{https://crediblefriends.com/}}
+\bibitem{kambo}{Access date: 04.10.2018, \url{https://www.kambo.io/}}
+\bibitem{unchained}{Access date: 04.10.2018, \url{https://www.unchained-capital.com/}}
+\bibitem{makerdao}{Access date: 04.10.2018, \url{https://makerdao.com/}}
+\bibitem{othera}{Access date: 04.10.2018, \url{https://www.othera.io/}}
+
 
 \end{thebibliography}
 
