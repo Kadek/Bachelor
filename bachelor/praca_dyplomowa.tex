@@ -18,7 +18,29 @@
 \usepackage{verbatim}
 \usepackage{indentfirst}
 \usepackage[pdftex]{hyperref}
+\usepackage{listings}
+\usepackage{color}
 
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C++,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
 
 % rozmaite polecenia pomocnicze
 % gdzie rysunki?
@@ -247,7 +269,7 @@ The blockchain market has not evolved yet to hold many companies which could pro
 
 Not every system has to be designed before being implemented. Especially if it's destiny it to never be used by anyone outside the creator or if the aim of the system is to make life of everyone using and supporting it as painful as possible. The system created for the purpose of this thesis does not fulfil either one of those requirements and thus a specification and an architectural design had been created before the construction  began.
 
-\section{Loans}
+\section{Loans} \label{loans}
 One loan offer on an exchange will consist of following parameters, which will be specified by the user before every deal:
 \begin{itemize}
 \item \textbf{Basis}: Size of the loan denominated in Ethereum.
@@ -442,38 +464,159 @@ The security issue is still solvable. What has been achieved is not a strong sec
 %-----------------
 \chapter{Software implementation}
 
+Having spent some time on laying out the plans for the software it is now possible to start the construction. The following subchapters will include description of general structure of respective modules. Additionally, more interesting facts about specific technologies backed by code will be presented.
+
 \section{Ethereum network}
-What is Geth?
-What is ganache-cli?
+
+Just as there has to be an SQL server if we want to use relational database, there has to be working blockchain network to use blockchain. Generally, the implementation presented here is network-agnostic. That is does not matter whether the network being used is a private network, test network or the main network. All that is needed is an address pointing to Ethereum node server. Further communication with the network is handled by node. The final system has not been tested in a multi-node environment. Partly, due to lack of resources and mainly because working of such network reaches out of the scope of this project. By design of blockchain, communication with a network of one node and a network of many nodes should not differ and thus user of a blockchain should not have to test such scenarios.
+
+\textbf{Geth}, short for GO Ethereum, is an implementation of a Ethereum node in Golang. It is possible to easily start your own network or connect to an existing one using Geth client through command line. Among many Geth includes tools for mining the new hashes or implements the whole web3j RPC standard.  The problem with using Geth is that it's usage is quite low level. Meaning, the user has a lot of command over how the system works but has to do a lot of manual labour. Especially, when doing repetitive tasks such as starting and shutting down the node. Geth is a perfect choice for beginners as it gives a chance to understand every part of the mechanism but at the same time it is unsuitable for development processes being so exhaustive in usage.
+
+\textbf{Ganache} is a tool more suitable for experienced developers willing to omit the standard procedures. The tool is simply a script which automatically handles all of manual labour. By specifying the parameters during start up one can configure his network which is automatically setup with prepared accounts and mining configured as to pass every transaction immediately. Ganache is the tool better suited for software development by hiding a lot of internals of a ethereum node. Which of course could lead to developers unfamiliar with the technology they are using on daily basis. The figure \ref{ganache} presents are working Ethereum node started by Ganache.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/bitcoin.png}
+\end{center}
+	\caption{Ethereum node using Ganache}
+	\label{ganache}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 \section{Solidity} \label{solidity}
 
-How to compile?
-What is truffle?
-Math without decimals and negative numbers?
-How to compute exponential?
+Solidity is what makes this project different. Being a quite unknown language there are a lot of concepts that have to be explained.
 
-How is ledger implemented?
+First question anyone may wonder is, how do you compile this? The procedure looks as follows. First, a file with Solidity code has to be created. The file extension for Solidity is .sol. Then an implementation  of a Solidity compiler in arbitrary language has to be used. One can use a JavaScript or Python implementation but for Windows users the easiest way is simply using a compiled binary solc.exe downloadable from Solidity documentation page \cite{solc}. Using compiler on the Solidity file output two files. One binary file and one file with extension .abi. The binary is the actual compiled code. This binary file is later deployed on blockchain, read by EVM and used. The ABI ( Application Binary Interface ) is as the name suggests an interface through which EVM knows the function signatures it will invoke. 
 
-\subsection*{Safety}
-How to transfer funds? 
-What is condition-computation-action?
-What are public operators?
+Using solc is a troublesome as using Geth. Fortunately, there have already appeared frameworks who make the development process much faster. The most prominent one and the being used in this project is called \textit{Truffle} \cite{truffle}. Truffle lets you deal with complicated import dependencies by hiding them behind one compile command. It also lets you easily deploy your contracts and interact with them by JavaScript scripts and console. Together Ganache and truffle deal with most of the functionalities of Geth. Ganache provides for the setup environment part and Truffle for the usage of working node part.
 
-\subsection*{Tests}
-Js tests?
-Solidity tests?
+Knowing how prepared Solidity ought to be handled we are ready to analyse some actual lines of code.
+As an example we will use the Ledger smart contract. The Ledger is used to store addresses of loan asks and loan bids. Taking into account the gas cost of running Solidity code, the data structure has to be written in such a way that will minimise the costs, fulfil the requirements and be secure. The strategy for minimising costs that has been applied here tries to put the minimal amount of code in Solidity and assign as much as possible to Java code. That is why, the addresses are stored in simple unordered arrays. We will sort them using Java. Additionally, the input, read and delete operations are all O(1). Sample code presenting the key concepts can be seen in the listing below.
 
+\begin{lstlisting}
+contract Ledger {
+
+ 	// Simple array
+	address[] public askAddresses;
+	address[] public bidAddresses;
+
+	function addAsk(address askAddress) public {
+		askAddresses.push(askAddress);
+	}
+
+	// Remove element at index and insert the last element there
+	function deleteAsk(uint index) public {
+		require(index < askAddresses.length);
+		if(askAddresses.length > 1){
+			askAddresses[index] = askAddresses[askAddresses.length-1];
+		}
+		delete askAddresses[askAddresses.length-1];
+		askAddresses.length--;
+	}
+
+
+	// You have to know index of the element you are looking for
+	function getAskAddressAtRow(uint index) constant public returns (address){
+		return askAddresses[index];
+	}
+
+	function getAskAddressCount() constant public returns (uint){
+		return askAddresses.length;
+	}
+
+	/* The rest of the code */
+}
+\end{lstlisting}
+ 
+Fascinating characteristic of Solidity is lack of negative and floating point numbers. Every number here is an unsigned integer 256 bits in length. The decision of creators of Ethereum to dedicate the whole technology to this one number was not ill-minded. Given that Ethereum is serves mostly purely financial needs it is very important to not allow for any rounding errors. Many of modern languages provide two versions of floating point numbers, one for scientific purposes where rounding errors are possible and second, very often called decimal, which assures that up to certain decimal place there will be no rounding errors. Ethereum scraped the whole idea and forced all of Solidity developers to sharpen their math skills and invent ways to do all of their math in integers. The same reasoning removed negative numbers which normally are just a different representation of bits hidden inside a variable.
+
+The whole setup makes non-trivial math functions require non-trivial handling. In this project to calculate repayment of a loan one has to calculate exponential function. Of course, Solidity does not provide an exponential operator as it would allow for floating point numbers. The equation presented in the chapter \ref{loans} has to modified to remove negative exponentials and thus looks as follows.
+	
+\[C = \frac{(1+r)^n * r * Scale * P}{((1+r)^n - Scale) * Scale}	\]
+
+Where C is monthly installment, r is interest rate per month, P is principal amount/basis, n is a duration of a loan in periods equal to predefined amount of days and Scale is Scale factor which removes fixed point operations. It is very important to not cancel the Scale present in nominator and denominator. If calculated one after another we successfully map the output to integers.
+
+\newpage
+The exponential function is computed with the following code.
+\begin{lstlisting}
+function exp() private constant returns (uint){
+	uint s = 0;
+	uint N = 1;
+	uint B = 1;
+	for (uint i = 0; i < precision; ++i){
+		s = s.add(scale.mul(N).div(B).div(interestReciprocal**i));
+	    N  = N.mul(duration.sub(i));
+	    B  = B.mul(i.add(1));
+	}
+	return s;
+}
+\end{lstlisting}
+
+The code above computes the formula:
+\[	Scale * (1 + \frac{1}{interestReciprocal})^n \]
+
+It does so by using Binomial Theorem, that is the fact that:
+\[	(1 + interest) = \sum_{k=0}^n {n \choose k} interest^k \]
+
+The loop above computes first k values of the sum. The variable k is depicted in the loop as precision. The approximation works because every next element in the sum is smaller by considerably amount and thus even precision equal to eight grants sufficient quality of approximation. The general experience shows, that what constitutes a simple operator invocation in even low level languages, here requires math savviness.
+
+The last element of Solidity that is worth mentioning are the tests. As stated many times throughout this paper Solidity is a fragile language, meaning that it is easy to make mistakes and the mistakes could be very costly. It is obligatory then to maximize test coverage. Moreover, it also helps for future development. For example, in the case of this project. If some Java code invoking Solidity returns error we have two possible sources of error. Either the solidity code is broken or the data we input is incorrect. Testing Solidity allows us to erode the first possibility and find the error much quicker saving a lot of our precious time. 
+
+How does one write tests for Solidity? With help comes once again the Truffle framework. Besides compilation or deployment it also provides testing framework. It is possible to write high level tests using JavaScript or low level ones using Solidity itself. In this project all of tests have been written in JavaScript as none of the cases required more low level handling. The Truffle extends a widely used JavaScript testing framework Mocha which uses asynchronous capabilities of JavaScript to write very clean test cases. An example test case can be seen in the listing below. As a proof of the work done for this project and it's correctness a test suite is presented in the figure \ref{tests}
+
+\begin{lstlisting}
+contract('Ledger unit test', function(accounts){
+  it("should allow to remove ask addresses", function() {
+    return Ledger.deployed().then(function(instance){
+      ledger = instance;
+      return ledger.deleteAsk(0);
+    }).then(function() {
+      return ledger.getAskAddressCount();
+    }).then(function(addressesLength) {
+      assert.equal(addressesLength, 2, "Addresses length after delete is " + addressesLength + " instead of 2");
+    });
+  });
+}
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/bitcoin.png}
+\end{center}
+	\caption{Successful test suite run}
+	\label{tests}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
 
 \section{Java}
 
-How to compile?
+All of Exchange Engine and GUI components are written in Java. Being one of the most known languages in the world there will no remarks over the language itself. What this subchapter will concern are mostly the classes, their dependencies and the structures employed in the project.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/bitcoin.png}
+\end{center}
+	\caption{Simplified class diagram of the exchange engine}
+	\label{engine class}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+We start of with the class diagram of the Exchange engine, that is figure \ref{engine class}
 
 \section{Visuals}
 
 \section{Completion verification}
-How to compile?
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{Bibliography}
@@ -498,6 +641,8 @@ How to compile?
 \bibitem{makerdao}{Access date: 04.10.2018, \url{https://makerdao.com/}}
 \bibitem{othera}{Access date: 04.10.2018, \url{https://www.othera.io/}}
 \bibitem{othera}{Google, Access date: 09.10.2018, \url{https://material.io/design/}}
+\bibitem{solc}{Access date: 09.10.2018, \url{https://solidity.readthedocs.io/en/v0.4.21/installing-solidity.html}}
+\bibitem{truffle}{Access date: 09.10.2018, \url{https://truffleframework.com/}}
 
 
 \end{thebibliography}
