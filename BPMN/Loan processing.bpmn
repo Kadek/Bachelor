@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bonitaConnector="http://www.bonitasoft.org/studio/connector/definition/6.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di_1="http://www.omg.org/spec/DD/20100524/DI" xmlns:java="http://jcp.org/en/jsr/detail?id=270" xmlns:model="http://www.omg.org/spec/BPMN/20100524/MODEL" xsi:schemaLocation="schemaLocation http://www.omg.org/spec/BPMN/20100524/MODEL schemas/BPMN20.xsd" exporter="BonitaSoft" exporterVersion="7.5.4" expressionLanguage="http://groovy.codehaus.org/" targetNamespace="http://bonitasoft.com/_ul5wgJ5KEei1H5MtN9aFPw">
   <model:collaboration id="_ul5wgJ5KEei1H5MtN9aFPw">
-    <model:participant id="_Ox9WYJ5NEeiTX-dOHMvY5g" name="Loan processing" processRef="_ul5wgZ5KEei1H5MtN9aFPw"/>
+    <model:participant id="_4K9xoMoNEeiB8PCe_VavrA" name="Loan processing" processRef="_ul5wgZ5KEei1H5MtN9aFPw"/>
     <model:participant id="_ul5w5J5KEei1H5MtN9aFPw" name="Employee actor">
       <model:documentation>This is an example of actor that is mapped to any ACME users</model:documentation>
     </model:participant>
   </model:collaboration>
   <model:process id="_ul5wgZ5KEei1H5MtN9aFPw" name="Loan processing">
-    <model:ioSpecification id="_OyGgUp5NEeiTX-dOHMvY5g">
-      <model:inputSet id="_OyGgU55NEeiTX-dOHMvY5g"/>
-      <model:outputSet id="_OyGgVJ5NEeiTX-dOHMvY5g"/>
+    <model:ioSpecification id="_4LadksoNEeiB8PCe_VavrA">
+      <model:inputSet id="_4LkOkMoNEeiB8PCe_VavrA"/>
+      <model:outputSet id="_4MATcMoNEeiB8PCe_VavrA"/>
     </model:ioSpecification>
     <model:laneSet id="Loan processing_laneSet">
       <model:lane id="_ul5wgp5KEei1H5MtN9aFPw" name="System">
@@ -17,82 +17,94 @@
         <model:flowNodeRef>_ul5wiJ5KEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_ul5wkp5KEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_ul5wnJ5KEei1H5MtN9aFPw</model:flowNodeRef>
-        <model:flowNodeRef>_ul5wpp5KEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_ul5wrJ5KEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_ul5wsZ5KEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_44k6MJ5KEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_AKiE4J5LEei1H5MtN9aFPw</model:flowNodeRef>
-        <model:flowNodeRef>_FujHEJ5LEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_Q08MsJ5LEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_h-l1QJ5LEei1H5MtN9aFPw</model:flowNodeRef>
         <model:flowNodeRef>_DCoogJ5NEeiTX-dOHMvY5g</model:flowNodeRef>
+        <model:flowNodeRef>_x5yN4MlREeimmZxdQLEUVw</model:flowNodeRef>
+        <model:flowNodeRef>_22FIwMlREeimmZxdQLEUVw</model:flowNodeRef>
+        <model:flowNodeRef>_HmlRgMlSEeimmZxdQLEUVw</model:flowNodeRef>
+        <model:flowNodeRef>_ZhCE4MlSEeimmZxdQLEUVw</model:flowNodeRef>
       </model:lane>
     </model:laneSet>
     <model:startEvent id="_ul5wg55KEei1H5MtN9aFPw" name="A new ask or bid is created"/>
     <model:task id="_ul5wiJ5KEei1H5MtN9aFPw" name="Positions are matched"/>
     <model:task id="_ul5wkp5KEei1H5MtN9aFPw" name="Loan contracts are created"/>
     <model:task id="_ul5wnJ5KEei1H5MtN9aFPw" name="Loan basis is added to loan taker's account"/>
-    <model:startEvent id="_ul5wpp5KEei1H5MtN9aFPw" name="Every repayment period">
-      <model:timerEventDefinition id="event-defEvery repayment period">
-        <model:timeCycle>0 0 0/1 1/1 * ? *</model:timeCycle>
-      </model:timerEventDefinition>
-    </model:startEvent>
     <model:exclusiveGateway id="_ul5wrJ5KEei1H5MtN9aFPw" name=""/>
-    <model:task id="_ul5wsZ5KEei1H5MtN9aFPw" name="Transfer proportional sums from loan taker's account to loan providers' account"/>
+    <model:task id="_ul5wsZ5KEei1H5MtN9aFPw" name="Transfer repayment amount from loan to loan giver's account"/>
     <model:exclusiveGateway id="_44k6MJ5KEei1H5MtN9aFPw" name=""/>
-    <model:task id="_AKiE4J5LEei1H5MtN9aFPw" name="Money from collateral are transfered to repayment balance"/>
-    <model:task id="_FujHEJ5LEei1H5MtN9aFPw" name="The whole loan is immediately repayed"/>
-    <model:task id="_Q08MsJ5LEei1H5MtN9aFPw" name="Notification is sent to bailiff"/>
-    <model:task id="_h-l1QJ5LEei1H5MtN9aFPw" name="Money from bailiff execution are retrieved"/>
-    <model:task id="_DCoogJ5NEeiTX-dOHMvY5g" name="Block loan takers account"/>
+    <model:task id="_AKiE4J5LEei1H5MtN9aFPw" name="Money from deposit are transfered to loan giver's account"/>
+    <model:task id="_Q08MsJ5LEei1H5MtN9aFPw" name="Notification is sent to notary"/>
+    <model:task id="_h-l1QJ5LEei1H5MtN9aFPw" name="Legal procedures are started by bailiff"/>
+    <model:task id="_DCoogJ5NEeiTX-dOHMvY5g" name="Block loan"/>
+    <model:startEvent id="_x5yN4MlREeimmZxdQLEUVw" name="Loan taker tries to consume repayment"/>
+    <model:exclusiveGateway id="_22FIwMlREeimmZxdQLEUVw" name=""/>
+    <model:endEvent id="_HmlRgMlSEeimmZxdQLEUVw" name="Done"/>
+    <model:endEvent id="_ZhCE4MlSEeimmZxdQLEUVw" name="Done"/>
     <model:sequenceFlow id="_ul5w1Z5KEei1H5MtN9aFPw" name="" sourceRef="_ul5wg55KEei1H5MtN9aFPw" targetRef="_ul5wiJ5KEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyQRXp5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB30MoNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
     <model:sequenceFlow id="_ul5w2J5KEei1H5MtN9aFPw" name="" sourceRef="_ul5wiJ5KEei1H5MtN9aFPw" targetRef="_ul5wkp5KEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbQJ5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB30coNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
     <model:sequenceFlow id="_ul5w255KEei1H5MtN9aFPw" name="" sourceRef="_ul5wkp5KEei1H5MtN9aFPw" targetRef="_ul5wnJ5KEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbQZ5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
-    </model:sequenceFlow>
-    <model:sequenceFlow id="_ul5w3p5KEei1H5MtN9aFPw" name="" sourceRef="_ul5wpp5KEei1H5MtN9aFPw" targetRef="_ul5wrJ5KEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbQp5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB30soNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
     <model:sequenceFlow id="_ul5w4Z5KEei1H5MtN9aFPw" name="Loan taker can pay" sourceRef="_ul5wrJ5KEei1H5MtN9aFPw" targetRef="_ul5wsZ5KEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbQ55NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB308oNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
     <model:sequenceFlow id="_6FojMJ5KEei1H5MtN9aFPw" name="Loan taker can't pay" sourceRef="_ul5wrJ5KEei1H5MtN9aFPw" targetRef="_DCoogJ5NEeiTX-dOHMvY5g">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbRJ5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB31MoNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
-    <model:sequenceFlow id="_Edd5sJ5LEei1H5MtN9aFPw" name="Loan taker has collateral" sourceRef="_44k6MJ5KEei1H5MtN9aFPw" targetRef="_AKiE4J5LEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbRZ5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
-    </model:sequenceFlow>
-    <model:sequenceFlow id="_K6m8QJ5LEei1H5MtN9aFPw" name="" sourceRef="_AKiE4J5LEei1H5MtN9aFPw" targetRef="_FujHEJ5LEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbRp5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+    <model:sequenceFlow id="_Edd5sJ5LEei1H5MtN9aFPw" name="Loan taker provided deposit" sourceRef="_44k6MJ5KEei1H5MtN9aFPw" targetRef="_AKiE4J5LEei1H5MtN9aFPw">
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB31coNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
     <model:sequenceFlow id="_VAJB0J5LEei1H5MtN9aFPw" name="Loan taker provided legal info" sourceRef="_44k6MJ5KEei1H5MtN9aFPw" targetRef="_Q08MsJ5LEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbR55NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB31soNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
     <model:sequenceFlow id="_niT8gJ5LEei1H5MtN9aFPw" name="" sourceRef="_Q08MsJ5LEei1H5MtN9aFPw" targetRef="_h-l1QJ5LEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbSJ5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
-    </model:sequenceFlow>
-    <model:sequenceFlow id="_oNmVMJ5LEei1H5MtN9aFPw" name="" sourceRef="_h-l1QJ5LEei1H5MtN9aFPw" targetRef="_FujHEJ5LEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbSZ5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB318oNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
     <model:sequenceFlow id="_GFPd4J5NEeiTX-dOHMvY5g" name="" sourceRef="_DCoogJ5NEeiTX-dOHMvY5g" targetRef="_44k6MJ5KEei1H5MtN9aFPw">
-      <model:conditionExpression xsi:type="model:tFormalExpression" id="_OyZbSp5NEeiTX-dOHMvY5g" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB32MoNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+    </model:sequenceFlow>
+    <model:sequenceFlow id="_6MqDAMlREeimmZxdQLEUVw" name="" sourceRef="_x5yN4MlREeimmZxdQLEUVw" targetRef="_22FIwMlREeimmZxdQLEUVw">
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB32coNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+    </model:sequenceFlow>
+    <model:sequenceFlow id="_872NIMlREeimmZxdQLEUVw" name="More time than payment period has passed" sourceRef="_22FIwMlREeimmZxdQLEUVw" targetRef="_ul5wrJ5KEei1H5MtN9aFPw">
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB32soNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+    </model:sequenceFlow>
+    <model:sequenceFlow id="_I_AdAMlSEeimmZxdQLEUVw" name="" sourceRef="_ul5wnJ5KEei1H5MtN9aFPw" targetRef="_HmlRgMlSEeimmZxdQLEUVw">
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB328oNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+    </model:sequenceFlow>
+    <model:sequenceFlow id="_aZZQQMlSEeimmZxdQLEUVw" name="Less time than payment period has passed" sourceRef="_22FIwMlREeimmZxdQLEUVw" targetRef="_ZhCE4MlSEeimmZxdQLEUVw">
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB33MoNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+    </model:sequenceFlow>
+    <model:sequenceFlow id="_eOAxYMlSEeimmZxdQLEUVw" name="" sourceRef="_ul5wsZ5KEei1H5MtN9aFPw" targetRef="_ZhCE4MlSEeimmZxdQLEUVw">
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB33coNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+    </model:sequenceFlow>
+    <model:sequenceFlow id="_eGuMoMoNEeiB8PCe_VavrA" name="" sourceRef="_AKiE4J5LEei1H5MtN9aFPw" targetRef="_ZhCE4MlSEeimmZxdQLEUVw">
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB33soNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
+    </model:sequenceFlow>
+    <model:sequenceFlow id="_lh6L0MoNEeiB8PCe_VavrA" name="" sourceRef="_h-l1QJ5LEei1H5MtN9aFPw" targetRef="_ZhCE4MlSEeimmZxdQLEUVw">
+      <model:conditionExpression xsi:type="model:tFormalExpression" id="_4QB338oNEeiB8PCe_VavrA" evaluatesToTypeRef="java:java.lang.Boolean" language="http://www.w3.org/1999/XPath"></model:conditionExpression>
     </model:sequenceFlow>
   </model:process>
   <di:BPMNDiagram name="Loan processing">
     <di:BPMNPlane id="plane__ul5wgJ5KEei1H5MtN9aFPw" bpmnElement="_ul5wgJ5KEei1H5MtN9aFPw">
-      <di:BPMNShape id="_ul5w_55KEei1H5MtN9aFPw" bpmnElement="_Ox9WYJ5NEeiTX-dOHMvY5g" isHorizontal="true">
-        <dc:Bounds height="372.0" width="1306.0" x="30.0" y="30.0"/>
+      <di:BPMNShape id="_ul5w_55KEei1H5MtN9aFPw" bpmnElement="_4K9xoMoNEeiB8PCe_VavrA" isHorizontal="true">
+        <dc:Bounds height="372.0" width="1305.0" x="30.0" y="30.0"/>
       </di:BPMNShape>
       <di:BPMNShape id="_ul5xAp5KEei1H5MtN9aFPw" bpmnElement="_ul5wgp5KEei1H5MtN9aFPw" isHorizontal="true">
-        <dc:Bounds height="372.0" width="1284.0" x="52.0" y="30.0"/>
+        <dc:Bounds height="372.0" width="1283.0" x="52.0" y="30.0"/>
       </di:BPMNShape>
       <di:BPMNShape id="_ul5xBZ5KEei1H5MtN9aFPw" bpmnElement="_ul5wg55KEei1H5MtN9aFPw">
         <dc:Bounds height="30.0" width="30.0" x="133.0" y="57.0"/>
-        <di:BPMNLabel id="_OyQRUZ5NEeiTX-dOHMvY5g" labelStyle="_OyGgUJ5NEeiTX-dOHMvY5g">
+        <di:BPMNLabel id="_4NDcUMoNEeiB8PCe_VavrA" labelStyle="_4LadkMoNEeiB8PCe_VavrA">
           <dc:Bounds height="15.0" width="141.0" x="78.0" y="92.0"/>
         </di:BPMNLabel>
       </di:BPMNShape>
@@ -105,16 +117,10 @@
       <di:BPMNShape id="_ul5xD55KEei1H5MtN9aFPw" bpmnElement="_ul5wnJ5KEei1H5MtN9aFPw">
         <dc:Bounds height="70.0" width="140.0" x="323.0" y="152.0"/>
       </di:BPMNShape>
-      <di:BPMNShape id="_ul5xEp5KEei1H5MtN9aFPw" bpmnElement="_ul5wpp5KEei1H5MtN9aFPw">
-        <dc:Bounds height="30.0" width="30.0" x="495.0" y="62.0"/>
-        <di:BPMNLabel id="_OyQRVZ5NEeiTX-dOHMvY5g" labelStyle="_OyGgUJ5NEeiTX-dOHMvY5g">
-          <dc:Bounds height="15.0" width="126.0" x="447.0" y="97.0"/>
-        </di:BPMNLabel>
-      </di:BPMNShape>
       <di:BPMNShape id="_ul5xFp5KEei1H5MtN9aFPw" bpmnElement="_ul5wrJ5KEei1H5MtN9aFPw">
         <dc:Bounds height="43.0" width="43.0" x="608.0" y="55.0"/>
-        <di:BPMNLabel id="_OyQRVp5NEeiTX-dOHMvY5g" labelStyle="_OyGgUJ5NEeiTX-dOHMvY5g">
-          <dc:Bounds height="0.0" width="0.0" x="629.0" y="103.0"/>
+        <di:BPMNLabel id="_4NzDMMoNEeiB8PCe_VavrA" labelStyle="_4LadkMoNEeiB8PCe_VavrA">
+          <dc:Bounds height="0.0" width="0.0" x="629.0" y="40.0"/>
         </di:BPMNLabel>
       </di:BPMNShape>
       <di:BPMNShape id="_ul5xGp5KEei1H5MtN9aFPw" bpmnElement="_ul5wsZ5KEei1H5MtN9aFPw">
@@ -122,15 +128,12 @@
       </di:BPMNShape>
       <di:BPMNShape id="_44uEJJ5KEei1H5MtN9aFPw" bpmnElement="_44k6MJ5KEei1H5MtN9aFPw">
         <dc:Bounds height="43.0" width="43.0" x="941.0" y="55.0"/>
-        <di:BPMNLabel id="_OyQRWJ5NEeiTX-dOHMvY5g" labelStyle="_OyGgUJ5NEeiTX-dOHMvY5g">
-          <dc:Bounds height="0.0" width="0.0" x="962.0" y="103.0"/>
+        <di:BPMNLabel id="_4NzDMsoNEeiB8PCe_VavrA" labelStyle="_4LadkMoNEeiB8PCe_VavrA">
+          <dc:Bounds height="0.0" width="0.0" x="963.0" y="40.0"/>
         </di:BPMNLabel>
       </di:BPMNShape>
       <di:BPMNShape id="_AKiE6p5LEei1H5MtN9aFPw" bpmnElement="_AKiE4J5LEei1H5MtN9aFPw">
         <dc:Bounds height="79.0" width="159.0" x="684.0" y="152.0"/>
-      </di:BPMNShape>
-      <di:BPMNShape id="_FujHGp5LEei1H5MtN9aFPw" bpmnElement="_FujHEJ5LEei1H5MtN9aFPw">
-        <dc:Bounds height="71.0" width="142.0" x="693.0" y="266.0"/>
       </di:BPMNShape>
       <di:BPMNShape id="_Q08Mup5LEei1H5MtN9aFPw" bpmnElement="_Q08MsJ5LEei1H5MtN9aFPw">
         <dc:Bounds height="60.0" width="120.0" x="903.0" y="157.0"/>
@@ -140,6 +143,30 @@
       </di:BPMNShape>
       <di:BPMNShape id="_DDPFcJ5NEeiTX-dOHMvY5g" bpmnElement="_DCoogJ5NEeiTX-dOHMvY5g">
         <dc:Bounds height="60.0" width="120.0" x="774.0" y="47.0"/>
+      </di:BPMNShape>
+      <di:BPMNShape id="_x7Z-gMlREeimmZxdQLEUVw" bpmnElement="_x5yN4MlREeimmZxdQLEUVw">
+        <dc:Bounds height="30.0" width="30.0" x="171.0" y="267.0"/>
+        <di:BPMNLabel id="_4NzDN8oNEeiB8PCe_VavrA" labelStyle="_4LadkMoNEeiB8PCe_VavrA">
+          <dc:Bounds height="15.0" width="207.0" x="83.0" y="302.0"/>
+        </di:BPMNLabel>
+      </di:BPMNShape>
+      <di:BPMNShape id="_22FIxclREeimmZxdQLEUVw" bpmnElement="_22FIwMlREeimmZxdQLEUVw">
+        <dc:Bounds height="43.0" width="43.0" x="323.0" y="260.0"/>
+        <di:BPMNLabel id="_4NzDOMoNEeiB8PCe_VavrA" labelStyle="_4LadkMoNEeiB8PCe_VavrA">
+          <dc:Bounds height="0.0" width="0.0" x="344.0" y="308.0"/>
+        </di:BPMNLabel>
+      </di:BPMNShape>
+      <di:BPMNShape id="_HmrYIMlSEeimmZxdQLEUVw" bpmnElement="_HmlRgMlSEeimmZxdQLEUVw">
+        <dc:Bounds height="30.0" width="30.0" x="399.0" y="86.0"/>
+        <di:BPMNLabel id="_4O1lAMoNEeiB8PCe_VavrA" labelStyle="_4LadkMoNEeiB8PCe_VavrA">
+          <dc:Bounds height="15.0" width="29.0" x="400.0" y="121.0"/>
+        </di:BPMNLabel>
+      </di:BPMNShape>
+      <di:BPMNShape id="_ZhCE5clSEeimmZxdQLEUVw" bpmnElement="_ZhCE4MlSEeimmZxdQLEUVw">
+        <dc:Bounds height="30.0" width="30.0" x="576.0" y="315.0"/>
+        <di:BPMNLabel id="_4O1lAcoNEeiB8PCe_VavrA" labelStyle="_4LadkMoNEeiB8PCe_VavrA">
+          <dc:Bounds height="15.0" width="29.0" x="577.0" y="350.0"/>
+        </di:BPMNLabel>
       </di:BPMNShape>
       <di:BPMNEdge id="_ul5xK55KEei1H5MtN9aFPw" bpmnElement="_ul5w1Z5KEei1H5MtN9aFPw">
         <di_1:waypoint x="162.0" y="72.0"/>
@@ -164,13 +191,6 @@
           <dc:Bounds height="0.0" width="0.0" x="288.0" y="174.0"/>
         </di:BPMNLabel>
       </di:BPMNEdge>
-      <di:BPMNEdge id="_ul5xQJ5KEei1H5MtN9aFPw" bpmnElement="_ul5w3p5KEei1H5MtN9aFPw">
-        <di_1:waypoint x="525.0" y="76.0"/>
-        <di_1:waypoint x="608.0" y="76.0"/>
-        <di:BPMNLabel>
-          <dc:Bounds height="0.0" width="0.0" x="567.0" y="66.0"/>
-        </di:BPMNLabel>
-      </di:BPMNEdge>
       <di:BPMNEdge id="_ul5xR55KEei1H5MtN9aFPw" bpmnElement="_ul5w4Z5KEei1H5MtN9aFPw">
         <di_1:waypoint x="620.0" y="89.0"/>
         <di_1:waypoint x="620.0" y="120.0"/>
@@ -193,14 +213,7 @@
         <di_1:waypoint x="748.0" y="122.0"/>
         <di_1:waypoint x="748.0" y="152.0"/>
         <di:BPMNLabel>
-          <dc:Bounds height="15.0" width="127.0" x="789.0" y="125.0"/>
-        </di:BPMNLabel>
-      </di:BPMNEdge>
-      <di:BPMNEdge id="_K6m8Q55LEei1H5MtN9aFPw" bpmnElement="_K6m8QJ5LEei1H5MtN9aFPw">
-        <di_1:waypoint x="747.0" y="231.0"/>
-        <di_1:waypoint x="747.0" y="266.0"/>
-        <di:BPMNLabel>
-          <dc:Bounds height="0.0" width="0.0" x="757.0" y="249.0"/>
+          <dc:Bounds height="15.0" width="148.0" x="778.0" y="125.0"/>
         </di:BPMNLabel>
       </di:BPMNEdge>
       <di:BPMNEdge id="_VAJB055LEei1H5MtN9aFPw" bpmnElement="_VAJB0J5LEei1H5MtN9aFPw">
@@ -217,13 +230,6 @@
           <dc:Bounds height="0.0" width="0.0" x="957.0" y="242.0"/>
         </di:BPMNLabel>
       </di:BPMNEdge>
-      <di:BPMNEdge id="_oNmVM55LEei1H5MtN9aFPw" bpmnElement="_oNmVMJ5LEei1H5MtN9aFPw">
-        <di_1:waypoint x="893.0" y="304.0"/>
-        <di_1:waypoint x="835.0" y="304.0"/>
-        <di:BPMNLabel>
-          <dc:Bounds height="0.0" width="0.0" x="864.0" y="314.0"/>
-        </di:BPMNLabel>
-      </di:BPMNEdge>
       <di:BPMNEdge id="_GFPd455NEeiTX-dOHMvY5g" bpmnElement="_GFPd4J5NEeiTX-dOHMvY5g">
         <di_1:waypoint x="894.0" y="75.0"/>
         <di_1:waypoint x="942.0" y="75.0"/>
@@ -231,8 +237,65 @@
           <dc:Bounds height="0.0" width="0.0" x="918.0" y="65.0"/>
         </di:BPMNLabel>
       </di:BPMNEdge>
+      <di:BPMNEdge id="_6MqDA8lREeimmZxdQLEUVw" bpmnElement="_6MqDAMlREeimmZxdQLEUVw">
+        <di_1:waypoint x="201.0" y="281.0"/>
+        <di_1:waypoint x="323.0" y="281.0"/>
+        <di:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="262.0" y="271.0"/>
+        </di:BPMNLabel>
+      </di:BPMNEdge>
+      <di:BPMNEdge id="_878TwMlREeimmZxdQLEUVw" bpmnElement="_872NIMlREeimmZxdQLEUVw">
+        <di_1:waypoint x="356.0" y="272.0"/>
+        <di_1:waypoint x="482.0" y="272.0"/>
+        <di_1:waypoint x="482.0" y="77.0"/>
+        <di_1:waypoint x="609.0" y="77.0"/>
+        <di:BPMNLabel>
+          <dc:Bounds height="15.0" width="230.0" x="379.0" y="57.0"/>
+        </di:BPMNLabel>
+      </di:BPMNEdge>
+      <di:BPMNEdge id="_I_AdA8lSEeimmZxdQLEUVw" bpmnElement="_I_AdAMlSEeimmZxdQLEUVw">
+        <di_1:waypoint x="443.0" y="152.0"/>
+        <di_1:waypoint x="443.0" y="100.0"/>
+        <di_1:waypoint x="428.0" y="100.0"/>
+        <di:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="433.0" y="118.0"/>
+        </di:BPMNLabel>
+      </di:BPMNEdge>
+      <di:BPMNEdge id="_aZZQQ8lSEeimmZxdQLEUVw" bpmnElement="_aZZQQMlSEeimmZxdQLEUVw">
+        <di_1:waypoint x="344.0" y="303.0"/>
+        <di_1:waypoint x="344.0" y="329.0"/>
+        <di_1:waypoint x="576.0" y="329.0"/>
+        <di:BPMNLabel>
+          <dc:Bounds height="15.0" width="224.0" x="323.0" y="335.0"/>
+        </di:BPMNLabel>
+      </di:BPMNEdge>
+      <di:BPMNEdge id="_eOAxY8lSEeimmZxdQLEUVw" bpmnElement="_eOAxYMlSEeimmZxdQLEUVw">
+        <di_1:waypoint x="587.0" y="232.0"/>
+        <di_1:waypoint x="587.0" y="315.0"/>
+        <di:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="597.0" y="274.0"/>
+        </di:BPMNLabel>
+      </di:BPMNEdge>
+      <di:BPMNEdge id="_eG39osoNEeiB8PCe_VavrA" bpmnElement="_eGuMoMoNEeiB8PCe_VavrA">
+        <di_1:waypoint x="741.0" y="231.0"/>
+        <di_1:waypoint x="741.0" y="281.0"/>
+        <di_1:waypoint x="589.0" y="281.0"/>
+        <di_1:waypoint x="589.0" y="315.0"/>
+        <di:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="673.0" y="291.0"/>
+        </di:BPMNLabel>
+      </di:BPMNEdge>
+      <di:BPMNEdge id="_lh6L08oNEeiB8PCe_VavrA" bpmnElement="_lh6L0MoNEeiB8PCe_VavrA">
+        <di_1:waypoint x="893.0" y="306.0"/>
+        <di_1:waypoint x="749.0" y="306.0"/>
+        <di_1:waypoint x="749.0" y="327.0"/>
+        <di_1:waypoint x="605.0" y="327.0"/>
+        <di:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="759.0" y="317.0"/>
+        </di:BPMNLabel>
+      </di:BPMNEdge>
     </di:BPMNPlane>
-    <di:BPMNLabelStyle id="_OyGgUJ5NEeiTX-dOHMvY5g">
+    <di:BPMNLabelStyle id="_4LadkMoNEeiB8PCe_VavrA">
       <dc:Font isBold="false" isItalic="false" isStrikeThrough="false" isUnderline="false" name="Segoe UI" size="9.0"/>
     </di:BPMNLabelStyle>
   </di:BPMNDiagram>

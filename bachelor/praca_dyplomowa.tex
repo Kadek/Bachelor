@@ -268,7 +268,7 @@ The process of buying and selling loans will have the same characteristics as th
 \[C = \frac{rP}{1 - \frac{1}{(1+r)^n}}\]
 Where C is monthly installment, r is interest rate per month, P is principal amount/basis and n is a duration of a loan in periods equal to predefined amount of days.
 
-\section{Types of users}
+\section{Types of users} \label{users}
 
 The project provides for three types of possible actors. 
 
@@ -290,7 +290,7 @@ The second scenario uses notary who confirms the legal informations of a loan ta
 
 \section{Processes} \label{processes}
 
-It is required that all of the processes composing the whole system will be carefully planned. This way any sort of high level misconfigurations can be pointed out and fixed. The processes in this work are presented using BPMN notation and are accompanied by short notes explaining more intricate concepts.
+It is required that all of the processes composing the whole system will be carefully planned. This way any sort of high level misconfigurations can be pointed out and fixed. The processes in this work are presented using BPMN and are accompanied by short notes explaining more intricate concepts.
 
 \begin{figure}[!htbp]
 	\begin{center}
@@ -298,8 +298,10 @@ It is required that all of the processes composing the whole system will be care
 \includegraphics[scale=0.4]{\ImgPath/rys/loan_processing.png}
 \end{center}
 	\caption{Loan processing}
-	\label{ethereum}
+	\label{loan processing}
 \end{figure}
+
+The figure \ref{loan processing} gives us a glance over the whole life cycle of a loan. Starting with creation trough match of equivalent asks and bids, followed by regular transfer of funds and ended with eventual handling of going default. The loan is blocked as to not allow any possibility of loan giver draining the collateral funds from the deposit repeatedly. Only the sum left to be repaid should be granted to the loan giver.
 
 \begin{figure}[!htbp]
 	\begin{center}
@@ -307,8 +309,12 @@ It is required that all of the processes composing the whole system will be care
 \includegraphics[scale=0.4]{\ImgPath/rys/loan_taker.png}
 \end{center}
 	\caption{Loan taker flow}
-	\label{ethereum}
+	\label{loan taker}
 \end{figure}
+
+\newpage
+
+The figure \ref{loan taker} describes what type of actions will loan taker take during his participation in the loan processing process. At all times he is able to create new loan asks, cancel them, create new loans by querying the system to match the loan offers he can also repay the loans as he is supposed to do. New concept introduced here is that of a ledger. This entity will be described more thoroughly in the chapter \ref{architecture}. To give a quick explanation. Ledger is a point of storage of loan bids and asks. Every one can create their own ledger and give the ledger address to other users. Only loan offers on the same ledger can match.
 
 \begin{figure}[!htbp]
 	\begin{center}
@@ -316,8 +322,13 @@ It is required that all of the processes composing the whole system will be care
 \includegraphics[scale=0.4]{\ImgPath/rys/loan_giver.png}
 \end{center}
 	\caption{Loan giver flow}
-	\label{ethereum}
+	\label{loan giver}
 \end{figure}
+
+Just as for the loan taker the figure \ref{loan giver} describes what type of actions will be taken during the loan processing process. The only noticeable difference here is that the loan giver is not given a chance to repay loans instead he has the possibility to consume the repayments and eventually call for help in case of defaults.
+
+The last figure that is \ref{authority} explains to us what are steps one of the authorities stated as the collateral by loan taker will have to take. The steps have been already described precisely in the description of the authority users \ref{users}.
+
 
 \begin{figure}[!htbp]
 	\begin{center}
@@ -325,35 +336,106 @@ It is required that all of the processes composing the whole system will be care
 \includegraphics[scale=0.4]{\ImgPath/rys/authority.png}
 \end{center}
 	\caption{Authority flow}
-	\label{ethereum}
+	\label{authority}
 \end{figure}
 
+\newpage
+
 \section{Requirements}
+
+Having modelled the core components of the system that is key data structure (loan), actors in the system (users) and processes that will control the changes of state in the system it is possible to state all of the requirements the system has to fulfil.
+
 The complete system should provide following functions:
 \begin{enumerate}
-\item Loan providers and loan takers should be able to:
+
+\item Loan givers and loan takers should be able to:
 \begin{itemize}
-\item check and transfer funds to and from their accounts using external wallet based on Ethereum network.
-\item specify the following parameters in their loan bids and asks: Basis, Duration, Interest, whether it has collateral.
-\item check their open bids and asks as well as the whole public exchange.
-\item cancel all of their open bids and asks.
+\item Create respectively loan bids and loan asks. Moreover, they should be able to specify directly the following parameters in their loan bids and asks: Basis, Duration, Interest, Collateral Type. Loan takers should be also able to add address of a collateral smart contract accordingly to the collateral type they have chosen.
+\item Specify the indirectly the parameters: Scale,Precision and Payment period. Indirectly in this case means that the parameters are not stated through API or GUI but through properties file attached to the code. It is important to state that security of this aspect is consciously omitted. As it is not foreseen for the project to be deployed in a production environment there are no checks whether matched loan asks and bids have those three parameters equal. The reason being those checks are deployment dependant and do not fall into the area of concern this work deals with.
+\item Create ledgers and share ledger addresses to other users.
+\item Cancel all of their open bids and asks.
+\item Check their open bids and asks as well as the whole public exchange.
+\item Query the ledger of open asks and bids and use matching engine to create new loans.
 \end{itemize}
-\item Loan takers should be able to:
+
+\item Loan takers should be additionally able to:
 \begin{itemize}
-\item specify legal informations which could be used by bailiff if repayment did not happen. At the same time the information should remain confidential so long there is no need to use them.
-\item bind his account with an account of a third party. The additional account will always hold a sum required to repay the whole loan when needed.
-\item repay the loan earlier.
+\item Transfer repayments to the loan contract.
+\item Attach to their loan ask a smart contract containing their personal information encrypted by notary. The whole data should decryptable upon receiving notary's private key used for encryption. The smart contract is denoted as legal procedures smart contract or legal. The notary should grant the private key upon noticing the set flag in the smart contract. The setting of the flag should be done automatically and rely on no trust.
+\item Attach to their loan ask a smart contract containing sum of funds sufficient to cover the whole loan cost that is principal plus interest. The transfer of funds from deposit to loan giver should be done automatically and rely on no trust.
 \end{itemize}
+
+\item Loan givers should be additionally able to:
+\begin{itemize}
+\item Consume repayments from the loan contract.
+\end{itemize}
+
+\item Deposit makers should be able to:
+\begin{itemize}
+\item Create a deposit with a specified sum of money.
+\item Withdraw all the funds from deposit if it not being used.
+\end{itemize}
+
+\item Notaries should be able to:
+\begin{itemize}
+\item Create a legal smart contract with encrypted data.
+\item Check the flag of a legal smart contract.
+\end{itemize}
+
 \item Every user should be able to:
 \begin{itemize}
-\item access the application having only internet connection.
-\item maintain his anonymity while using the system.
+\item Access the application having only internet connection. That is no registration or background check is required.
+\item Maintain his anonymity while using the system. Exceptionally, it could happen if loan taker has added legal collateral and went default.
 \end{itemize}
 \end{enumerate}
 
+All of the other aspects mentioned in the preceding chapters are treated as external to the system and will not be included in the design. Those are for example, bailiff chasing the loan takers or decrypting the legal smart contract information.
 
+\section{Architecture} \label{architecture}
 
-\section{Architecture}
+The last step in the design process is creation of an outlay of the components which constitute the whole system and at the same time fulfil all of the stated requirements. The application created in this project  follows the Model-View-Controller architectural pattern and the respective components can be seen on the figure \ref{system components}. Through usage of REST and RPC a separation of the components has been achieved and thus every box in the diagram could be replace by another technology so far it complies to the interfaces.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/high_level.png}
+\end{center}
+	\caption{System components}
+	\label{system components}
+\end{figure}
+
+The respective components denote:
+
+\textbf{GUI}: The View component is implemented as a desktop application. Standard Java library, JavaFX, is chosen. The choice is based on the wide usage of the library and easily findable support. The design of the GUI tries to follow the Material Design rules \cite{material} and uses another library based on JavaFX which provides the CSS styles and JavaFX components based on this design style. The supporting library is called JFoenix. The GUI module communicates with the Exchange engine using REST.
+
+\textbf{Exchange engine}: The Controller component being a REST server uses Spring Boot at it's core. The framework lets us easily create a running REST server and add new REST endpoints. The next library used in this component is called Web3j. This library serves is a Java implementation of the web3j RPC standard for Ethereum. Meaning, it allows to communicate with Ethereum blockchain using Java code. In essence what this component does is receive HTTP requests from, for example, GUI. Then, handles those requests by rerouting them to Web3j. Finally, web3j manipulates blockchain or reads from it. An important architectural decision had to be made concerning this component. The process of matching loans is not done on the blockchain, that the Model component of the whole system, but in Exchange engine component. The reasons for this decision are stated at the end of the chapter.
+
+\textbf{Ethereum network}: The Model component handling all of the data storage and most of the data processing. All of data storage and most of data processing is done on Ethereum blockchain. As stated in the first chapter the Ethereum blockchain could be compared to a data base with extraordinary coding possibilities. Implementation of this component is what differentiates this project from all other traditional MVCs. Every data processing procedure handled by the blockchain is trustless. Meaning everyone has access to the code and can use it, but no one can actually change it after the code has been deployed. As a result the whole application is fully decentralizable. Everyone can use and there is no need for a central entity to control such a valuable process as loan servicing. There are many drawbacks coupled with this trait and those will be also mentioned at the end of the chapter.
+
+\textbf{Users wallet}: Those are external entities from which it is only required that they implement Ethereum standard and have the possibility to send and receive Ether.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/contracts.png}
+\end{center}
+	\caption{Loan processing components}
+	\label{loan components}
+\end{figure}
+
+The next topic that needs explanation is how are the smart contracts structured and how do they interact with the rest of the system. All of this can be seen on the figure \ref{loan components}. The Model consists of three types of smart contracts those are:
+
+\textbf{Preloans}: Depicted in the figure as Loan ask and Loan bid. They are the asks and bids that loan takers and loan givers create, respectively. They contain all of the information enumerated in the specification of a loan as a data object. Ask and bid use the same smart contract as their code, that is Preloan. What differentiates them is what variables are put inside. When two equal Preloans are matched the Preloan being bid deploys the Loan smart contract to the network. All of the parameters are passed from matched Preloans to the final Loan and Loan requires only the information from Preloans to be created. 
+
+\textbf{Ledger}: Depicted in the figure as Loan offers ledger. Ledger is just a smart contract where addresses of created Preloans are stored. It has two columns asks and bids, one for addresses of asks' addresses and the other for bids'. Due to gas costs Ethereum incurs on every stored data and every operation which changes a state, it is of most importance to design such a structure as Ledger in a way that minimises the cost of operations on it and stores only the smallest amount of needed data. The actual implementation of this data structure is explained in the chapter \ref{solidity}. In general most of the operations are left to be done by Java code and thus Ledger's data is mostly read from the Ledger and processed outside. Ledger is not a unique entity. Every user can create his own ledger and then has to supply the ledger address when creating a Preloan. When a Preloan is deployed on the blockchain it calls the ledger whose address it possess and subscribes itself to the Ledger's storage.
+
+\textbf{Loan}: The smart contract that does all of the heavy lifting. After being created from two matched Preloans it transfers the basis to the loan taker, calculates the repayments and starts counting down to the next repayment. All of the repayment and default handling is done exactly as desribed in \textit{Loan processing} process.
+
+\textbf{Matching engine}: As stated many time before, Ethereum consumes gas for every transaction done. That means, such operation as creating a loan will also have to consume funds. Where to get those funds from? There are two solutions. First is, put additional amount of Ether to the Preloan as which will be used to cover transaction costs. The problem is, if gas prices suddenly rise the Preloans will be unusable. The second solution used in this system looks as follows. Every user with an access to the network can query the Ledger for current Preloans, use the matching engine to find matches and than use his own funds to do the transactions. Of course, one immediately sees that this approach has a flaw. Why would anyone bother with paying someone else transactions? The answer is, if you have deployed a Preloan then it is your incentive to commit other transactions as only then will your Preloan will have a chance to take the first place in the queue for being matched. Easy extension using first solution could be used if the whole project was to be developed further. Every creator of a Preloan can assign additional funds to the Preloan which will be than a reward to the person committing the transaction.
+
+The most important architectural decision that has been made here is putting the matching engine outside of the blockchain. It is clearly a security hole. As the matching is done outside of blockchian everyone can do their own matches and then commit them to the network. Of course, one could trace that the transaction should not happen given the Ledger's state but no one will be able to revert it. Nevertheless, one must remember of the gas costs. If the the matching engine was to be put inside blockchain the cost of using it would swing together with the gas prices. Additionally, due to lack of more complex data structures in the Solidity the code would be unsecure and huge meaning even bigger gas costs. Instead the whole matching is accomplished outside of blockchain and the only gas cost related is storing Ledger's data and creating Loan. 
+
+The security issue is still solvable. What has been achieved is not a strong security achieveable by pure blockchain usage but a weak security that still serves it's purpose. All of the contracts have been equipped with validation rules which do not allow for existence of loan whose parameters are harmful to one of the sides. For example it is not possible to match 5\% interest bid with a 3\% interest ask where the final Loan would be 3\% interest rate. Meaning harmful to the loan giver. The word weak means that the Loan achieved are not always the best ones. For example, there is 5\% interst bid and two asks, one has 6\% rate and the other 7\% rate. The best option is match with 7\% ask resulting in a 7\% loan. It is possible for the malicious users to force the 6\% loan meaning not the best possibility. Still the problem evaporates if we add the market forces. If the law of supply and demand where to work properly there would be only one good interest rate and no good and better interest rate. The differences would be simply bought out. In the end, a sacrifice in security has been made for usability.
 
 %-----------------
 % Software implementation
@@ -371,6 +453,8 @@ How to compile?
 What is truffle?
 Math without decimals and negative numbers?
 How to compute exponential?
+
+How is ledger implemented?
 
 \subsection*{Safety}
 How to transfer funds? 
@@ -413,6 +497,7 @@ How to compile?
 \bibitem{unchained}{Access date: 04.10.2018, \url{https://www.unchained-capital.com/}}
 \bibitem{makerdao}{Access date: 04.10.2018, \url{https://makerdao.com/}}
 \bibitem{othera}{Access date: 04.10.2018, \url{https://www.othera.io/}}
+\bibitem{othera}{Google, Access date: 09.10.2018, \url{https://material.io/design/}}
 
 
 \end{thebibliography}
