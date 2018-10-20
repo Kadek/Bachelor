@@ -474,16 +474,14 @@ Just as there has to be an SQL server if we want to use relational database, the
 
 \textbf{Ganache} is a tool more suitable for experienced developers willing to omit the standard procedures. The tool is simply a script which automatically handles all of manual labour. By specifying the parameters during start up one can configure his network which is automatically setup with prepared accounts and mining configured as to pass every transaction immediately. Ganache is the tool better suited for software development by hiding a lot of internals of a ethereum node. Which of course could lead to developers unfamiliar with the technology they are using on daily basis. The figure \ref{ganache} presents are working Ethereum node started by Ganache.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[!htbp]
 	\begin{center}
 \centering
-\includegraphics[scale=0.4]{\ImgPath/rys/bitcoin.png}
+\includegraphics[scale=0.7]{\ImgPath/rys/ganache_cli.png}
 \end{center}
 	\caption{Ethereum node using Ganache}
 	\label{ganache}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -584,16 +582,14 @@ contract('Ledger unit test', function(accounts){
 }
 \end{lstlisting}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[!htbp]
 	\begin{center}
 \centering
-\includegraphics[scale=0.4]{\ImgPath/rys/bitcoin.png}
+\includegraphics[scale=0.7]{\ImgPath/rys/test_pass.png}
 \end{center}
 	\caption{Successful test suite run}
 	\label{tests}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage
 
@@ -601,22 +597,149 @@ contract('Ledger unit test', function(accounts){
 
 All of Exchange Engine and GUI components are written in Java. Being one of the most known languages in the world there will no remarks over the language itself. What this subchapter will concern are mostly the classes, their dependencies and the structures employed in the project.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[!htbp]
 	\begin{center}
 \centering
-\includegraphics[scale=0.4]{\ImgPath/rys/bitcoin.png}
+\includegraphics[scale=0.4]{\ImgPath/rys/exchange_class.png}
 \end{center}
 	\caption{Simplified class diagram of the exchange engine}
 	\label{engine class}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We start of with the class diagram of the Exchange engine, that is figure \ref{engine class}
+We start of with the class diagram of the Exchange component, that is figure \ref{engine class} . The whole component is a stand-alone application that starts a server servicing REST requests. For this purpose a Spring Boot framework has been employed. As such, the architecture seen above is mostly a pattern of using this framework. The diagram is simplified as it doesn't present Data Transport Objects(DTO) which are not important in an functional overview.
 
-\section{Visuals}
+The respective components serve following purposes:
 
-\section{Completion verification}
+\textbf{Application} - is the JVM start point. It contains the \textit{main} function and starts automatically the server. All of the configurations are already supplied by Spring Boot. As a result, developer does not have to waste time on this aspect and can focus on the aim of the project. 
+
+Moreover, the Application class is coupled with a Swagger class and thus creates Swagger's pages out of the box. Swagger is a documentation library which automatically searches for all the REST end-points defined in the application and presents them in a compact and user friendly form. It is also possible to use Swagger for sending the REST requests making the debuggin process much faster. The traditional way of using debugging REST endpoints would be through usage of curl in command line, which was a troublesome and mistake ridden process.
+
+\textbf{Controller} - all of the classes which end with a Controller word contain the actual information about what REST end-points are presented by the application. Every Controller encapsulates one domain of functionalities and can be easily replaced or detaches without affecting the whole structure. For example, the LoanInfoController defines end-points allowing for access to information of a deployed loan. The Controllers do not implement the functions themselves, they only present interfaces to the outside world and direct the requests to respective entity classes. After, the computations are done a Controller receives the results and sends them back to the inquirer. 
+
+The Controllers are not connected with the Application class by hardcoded classes references. Technique called dependency injection is used here. Upon launching the application The Spring Boot framework looks for classes annotated with keyword \textit{@RestController}, then inside those classes it looks for functions annotated with keyword \textit{@PostMapping} or \textit{@GetMapping}, this annotation specifies also the path which has to be put into URL to access the function and what parameters ought to be supplied. Finally, the paths and their respective classes are processed into the server and are able to be used by users.
+
+\textbf{Entity} - the second layer presented in the diagram consists of classes which do the actual hard work. Those classes are instantiated by Controller classes and asked for fetching data or completing some kind of computations. For example, the Engine class receives an address of a Ledger, fetches the Ledger data from blockchain and matches the bids and asks so that proper Loans can be created. Different set of tasks is done by the Utils class which for example allows to encrypt information using RSA or ASE keys.
+
+\textbf{Blockchain Communicator} - is a class inherited by all of the Entity classes which have to communicate with the blockchain. The communicator provides ready functions which use the Web3j library to ,for example, connect with the blockchain or load some contracts. The library communicates with blockchain in an asynchronous manner. For this purpose Completable Futures are used, an invention brought into life with Java 8.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/gui_class.png}
+\end{center}
+	\caption{Simplified class diagram of the gui application}
+	\label{gui class}
+\end{figure}
+
+The next application written in Java is the GUI component of which class diagram we see on figure \ref{gui class} . Just as the Engine, the whole component is a stand-alone application. It uses built-in Java library called JavaFX, which allows for creation of modern desktop applications. The blocks in the diagram represent the following classes:
+
+\textbf{GUI} - in the exact same manner as for the Spring Boot application we need a starting class, whose only purpose is to place a main function and define starting configurations. That is in this example the first window to open. JavaFX based it's core on multi-threading. The thread which starts the actual GUI branches out from the thread which starts the Java program.
+
+\textbf{Controller} - is Java class which is supposed to be assigned to an fxml file. The Java class can handle events coming from the fxml files. It can manipulate the windows and values inside windows. JavaFX provides automatic dependency injection for window components inside Controller classes. So that it is only required to define a variable whose name is the same as an ID of a window component and the references will be automatically injected. Removing the need for any type of searching for window components. Controller is also the class which send the REST requests to the Engine component. For this, Task objects provided by JavaFX are used. The Tasks have to given certain attributes and callback functions. When started they create their own thread where they handle the network I/O. This way, User Experience is not obstructed with lags.
+
+\textbf{fxml files} - could be compared to HTML files. They use XML to define the structure of a window. CSS files are attached to them to define styles. Finally, each fxml has a controller assigned to it. Every component of the window can assigned some event and the event handler in the controller. The fxml files express great modularity capabilities. They can include other fxml files, which have their own controller. For example, every main window includes a navBar.fxml which handles switches between windows. This way a lot of redundancy can be avoided. In general, the material design rules were tried to be followed as to make the GUI as aesthetically pleasing as possible.
+
+\section{Summary}
+
+In this section screenshots of the GUI are presented. The images will only present general form of the windows and not all of the functionalities will be seen as the GUI serves only a supporting role in this project.
+
+
+\chapter{Usage showcase}
+
+The last chapter is dedicated towards a showcase of a typical use of the system. The presentation should serve as a proof of the work done and a source of admiration for blockchain. 
+
+\begin{enumerate}
+\item Start the ethereum node, matching engine and application GUI.
+\item Create a ledger \ref{create ledger}.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/create_ledger.png}
+\end{center}
+	\caption{Ledger creator}
+	\label{create ledger}
+\end{figure}
+
+\item Create deposit \ref{create deposit}.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/create_deposit.png}
+\end{center}
+	\caption{Deposit creator}
+	\label{create deposit}
+\end{figure}
+
+\item Create Preloans, bid and ask \ref{create bid}.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/create_bid.png}
+\end{center}
+	\caption{Bid creator}
+	\label{create bid}
+\end{figure}
+
+\item See if the Preloans appear on the exchange \ref{check exchange}.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/check_exchange.png}
+\end{center}
+	\caption{Exchange with created Preloans}
+	\label{check exchange}
+\end{figure}
+
+\item Match Preloans and create a Loan \ref{check loans}.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/check_loans.png}
+\end{center}
+	\caption{Matched Preloans}
+	\label{check loans}
+\end{figure}
+
+\item Check the parameters of a created Loan \ref{check loan}.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.4]{\ImgPath/rys/check_loan.png}
+\end{center}
+	\caption{Loan parameters}
+	\label{check loan}
+\end{figure}
+
+\item Refill the loan and then consume the refill \ref{check consume}.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.7]{\ImgPath/rys/check_consume.png}
+\end{center}
+	\caption{Logs of a loan consumption process}
+	\label{check consume}
+\end{figure}
+
+\item Consume without a refill and receive funds from deposit \ref{check deposit}.
+
+\begin{figure}[!htbp]
+	\begin{center}
+\centering
+\includegraphics[scale=0.7]{\ImgPath/rys/check_deposit.png}
+\end{center}
+	\caption{Logs of funds recovery process using deposit}
+	\label{check deposit}
+\end{figure}
+
+\end{enumerate}
+
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{Bibliography}
