@@ -5,6 +5,8 @@
 
 \typeout{Package `prmag2017' (ZETiIS PW Thesis) ver. 0.2 (Jan 2017)}
 
+\def\titleeng#1{\gdef\@titleeng{#1}}
+
 \def\nrindeksu#1{\gdef\@nrindeksu{#1}}
 \gdef\@nrindeksu{{\bf BRAK POLECENIA{\tt \(\backslash\)nrindeksu} !}}
 
@@ -31,13 +33,18 @@
 \long\def\streszczenia#1{\gdef\@streszczenia{#1}}
 
 \gdef\@miasto{WARSZAWA}
+\gdef\@miastoeng{WARSAW}
 \gdef\@uczelnia{POLITECHNIKA WARSZAWSKA}
 \gdef\@wydzial{WYDZIAŁ ELEKTRYCZNY}
-\gdef\@instytut{Instytut Elektrotechniki Teoretycznej\linebreak[1] i~Systemów Informacyjno-Pomiarowych}
+\gdef\@instytut{Instytut Elektrotechniki Teoretycznej\linebreak[1] i~  Systemów Informacyjno-Pomiarowych}
+\gdef\@instytuteng{Institute of Theory of Electrical Engineering, \linebreak[1] ~Measurement and Information Systems}
 \gdef\@zaklad{Zakład Elektrotechniki Teoretycznej\linebreak[1] i~Informatyki Stosowanej}
+\gdef\@zakladeng{Zakład Elektrotechniki Teoretycznej\linebreak[1] i~Informatyki Stosowanej}
 \gdef\@rodzajpracy{inżynierska}
 \gdef\@kierunekstudiow{Informatyka}
+\gdef\@kierunekstudioweng{Computer Science}
 \gdef\@specjalnosc{Inżynieria oprogramowania}
+\gdef\@specjalnosceng{Software Engineering}
 \gdef\@opiekun{{\Large\bf BŁĄD: BRAK POLECENIA {\tt \(\backslash\)opiekun} !}}
 \gdef\@terminwykonania{{\Large\bf BŁĄD: BRAK POLECENIA {\tt \(\backslash\)terminwykonania} !}}
 \gdef\@rok{{\Large\bf BŁĄD: BRAK POLECENIA {\tt \(\backslash\)rok} !}}
@@ -54,8 +61,10 @@
  to 0pt{$^{\@thefnmark}$\hss}}
  \if@twocolumn
  \twocolumn[\@maketitle]
+ \twocolumn[\@maketitleeng]
  \else \newpage
- \global\@topnum\z@ \@maketitle \fi\thispagestyle{empty}\@thanks
+ \global\@topnum\z@ \@maketitle \global\@topnum\z@ \@maketitleeng \fi\thispagestyle{empty}\@thanks
+  
  \endgroup
   \@streszczenia
 \cleardoublepage
@@ -88,6 +97,8 @@
  \pagenumbering{arabic}
  \let\maketitle\relax
  \let\@maketitle\relax
+ \let\maketitleeng\relax
+ \let\@maketitleeng\relax
  \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}
 %%% Title page - a masterpiece of typesetting
 %%% Title page - a masterpiece of typesetting
@@ -136,6 +147,53 @@
  \end{center}
  }
 }
+
+\def\@maketitleeng{\newpage
+  {\fontfamily{phv}\selectfont
+  
+  {\noindent\kern-1.2cm\includegraphics[width=16cm]{PWHeadeng.png}
+  \par}
+  
+    \vfill
+   
+ \begin{center}
+ {\fontsize{12}{13.4}\selectfont\@instytuteng\\ \@zakladeng\par}
+ 
+   \vfill
+
+ \noindent\kern-1.2cm\@ifundefined{@magisterska}{\includegraphics[width=16cm]{inzheadeng.png}}{\includegraphics[width=16cm]{mgrhead.png}}\par
+
+
+ 
+ {\fontsize{12}{13.4}\selectfont in the field of study  \@kierunekstudioweng\\
+  and specialisation \@specjalnosceng}
+  
+  \vfill
+ 
+  {\fontsize{14}{17}\selectfont \@titleeng \par}
+  
+    \vfill
+  
+  {\lineskip .5em
+  \begin{center}
+   \begin{tabular}[t]{ccc}
+   \fontsize{21}{25}\selectfont \@author  \@ifundefined{@authorII}{\relax}{&\ & \fontsize{21}{25}\selectfont \@authorII} \\
+   student record book number  \@nrindeksu  \@ifundefined{@nrindeksuII}{\relax}{&\ & student record book number \@nrindeksuII}
+  \end{tabular}\bigskip\par
+  \end{center}}
+  
+    \vskip20pt
+
+  \@ifundefined{@opiekun}{\relax}{thesis supervisor\\ \@opiekun\par\vskip5pt}
+  \@ifundefined{@konsultant}{\relax}{konsultant \\\@konsultant\par}
+
+  \vfill
+  
+ \@miastoeng\ \@rok
+ \end{center}
+ }
+}
+
 
 \long\def\@oswiadczenie{
 \cleardoublepage
