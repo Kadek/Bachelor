@@ -157,8 +157,9 @@ Blockchain was invented by Satoshi Nakamoto in 2008 to serve as the public trans
 	\label{bitcoin}
 \end{figure}
 
-But financial prospects are not the aspects this thesis is concerned with. The most groundbreaking features the blockchain possesses and which actually put it into the focus of modern computer science are anonymity and trustlessness.
 \newpage
+But financial prospects are not the aspects this thesis is concerned with. The most groundbreaking features the blockchain possesses and which actually put it into the focus of modern computer science are anonymity and trustlessness.
+
 \begin{itemize}
 \item Anonymity: In the simplest implementations of blockchain such as bitcoin it is not possible to find any information of the user participating in the network. That is a simple consequence of relying purely on assymetric cryptography and no other requirement for allowing to interact with the network other than having a key pair. This simple feature has amazing implications in the real world. Every one in the world with internet connection can actually use a distributed ledger. Coupled with the fact that cryptocurrencies can be used for value storage a way of escaping unstable national currencies has appeared for every human being. Recent example of that can be seen in Venezuela \cite{Venezuela}. There are also people who have found ways to use the anonymity in an illegal way. Silk road, the greatest illegal drug webshop accessible by TOR network has experienced a renaissance ever since bitcoin payments have been implemented \cite{Silkroad}. 
 
@@ -265,7 +266,13 @@ An interesting thought experiment could follow if we imagine that by some clever
 
 Of course cryptocurrencies could not leave such a lucrative area of the financial world aside and a multitude of different companies serving leverage services has appeared. The most interesting case is presented below. The other ones are left untouched as they mostly use the same techniques as in normal loans. One key concept that has to be introduced here is that of a \textit{stablecoin}. As stated already multiple times, cryptocurrencies are very volatile. The problem that ensues is that such instability of currencies results in an instability of companies and deals basing on those currencies. Solution invented for that problem is exactly what one would call a stablecoin. That is, a coin whose value is fixed at some certain value. Currently, the title of the most widely used stablecoin is held by \textit{Tether}, where value of one Tether is fixed at 1 dollar. The fixed ratio is achieved by restricting the possibility of mining new Tethers to central party and holding exact sum of USD on the central party's real-life bank account. One can see that Tether simply exchanges the decentralization aspect of blockchain for the stability. An action deemed nonsensical by many as the whole idea of trustlessness completely evaporates.
 
-\textit{Maker} is a company which created a cryptocurrency called \textit{DAI} \footnote{Access date: 04.10.2018, \url{https://makerdao.com/}} and this cryptocoin is also a stablecoin. The difference between DAI and Tether is that DAI is not centralized in any way. To explain how stability is achieved here one has to look at the general loan granting process. To borrow a loan using DAI you have to deposit some Ethereum in a special smart contract called collateralized debt position (CDP). Then you are able to withdraw DAI from CDP. The value of DAI withdrawn has to be smaller than the value of Ether you have stored. This process is called over-collateralization. Thanks to this process your DAI is always pegged to an equivalent of 1 Ethereum because you simply switch your Ethereum to DAI using smart contract. If Ethereum price changes the possible amount of DAI you can withdraw from CDP will also change. Finally, when your Ether stored on CDP will not be enough to cover the currently possessed DAI the contract gets liquidated. Your DAI and CDP are destroyed and the Ether comes back to you decreased by a liquidation fee (most times 13\%). On the other hand if everything goes right you give back the DAI plus interest later and can take your Ether back. One may ask now, what for should I use this scheme? As a result I will just receive different currency of which value will be lower than my deposit. To answer this question we go one step further. Lets assume we have taken the loan and exchanged Ether for DAI. Now we take the DAI to some exchange and buy Ether for it. We use this Ether to increase our over-collateralization and take more DAI. We can repeat the process and every time we will be able to increase the Ether collateral by a fraction of previous increase. The process will finally stop because the fraction will be miniscule. But finally we may end up with twice as much Ether stored on our CDP as what we have started with. Now if the price of Ether increases we revert the whole process but this time we can buy the DAI for a better price than we sell it. Finally, our Ether is more valuable and we have more Ether. But if the price falls down then we could end up liquidated and lose on value and on quantity of Ether. The whole financial process is reminiscent of rehypothecation used in the real-life financial world by banks to leverage and which has been one of many reasons for the financial crisis of 2008 to happen. The difference now is that DAI is on blockchain and follows the rules of publication of every transaction thus every action can be traced and reacted upon. In the year 2008 most of the contracts and deals were totally obfuscated and made the investors commit uninformed transactions. DAI could be treated as one of pearls of the blockchain technology, granting stability but leaving the decentralization and trustlessness aspect untouched. Of course, there is much doubt whether the whole project will take off. Following the process described above is even harder than understanding it and thus horrid user experience could be a nail to the grave for the project. Moreover, the idea being quite fresh it is still doubted whether everything is secure and if it is just a matter of time for the malicious agents to find a loophole in the system and put it to ruin. The only safe choice right now is to wait.
+\textit{Maker} is a company which created a cryptocurrency called \textit{DAI} \footnote{Access date: 04.10.2018, \url{https://makerdao.com/}} and this cryptocoin is also a stablecoin. The difference between DAI and Tether is that DAI is not centralized in any way. To explain how stability is achieved here one has to look at the general loan granting process. To borrow a loan using DAI you have to deposit some Ethereum in a special smart contract called collateralized debt position (CDP). Then you are able to withdraw DAI from CDP. The value of DAI withdrawn has to be smaller than the value of Ether you have stored. This process is called over-collateralization. Thanks to this process your DAI is always pegged to an equivalent of 1 Ethereum because you simply switch your Ethereum to DAI using smart contract. If Ethereum price changes the possible amount of DAI you can withdraw from CDP will also change. Finally, when your Ether stored on CDP will not be enough to cover the currently possessed DAI the contract gets liquidated. Your DAI and CDP are destroyed and the Ether comes back to you decreased by a liquidation fee (most times 13\%). On the other hand if everything goes right you give back the DAI plus interest later and can take your Ether back. 
+
+One may ask now, what for should I use this scheme? As a result I will just receive different currency of which value will be lower than my deposit. To answer this question we go one step further. Lets assume we have taken the loan and exchanged Ether for DAI. Now we take the DAI to some exchange and buy Ether for it. We use this Ether to increase our over-collateralization and take more DAI. We can repeat the process and every time we will be able to increase the Ether collateral by a fraction of previous increase. The process will finally stop because the fraction will be miniscule. But finally we may end up with twice as much Ether stored on our CDP as what we have started with. 
+
+Now if the price of Ether increases we revert the whole process but this time we can buy the DAI for a better price than we sell it. Finally, our Ether is more valuable and we have more Ether. But if the price falls down then we could end up liquidated and lose on value and on quantity of Ether. The whole financial process is reminiscent of rehypothecation used in the real-life financial world by banks to leverage and which has been one of many reasons for the financial crisis of 2008 to happen. 
+
+The difference now is that DAI is on blockchain and follows the rules of publication of every transaction thus every action can be traced and reacted upon. In the year 2008 most of the contracts and deals were totally obfuscated and made the investors commit uninformed transactions. DAI could be treated as one of pearls of the blockchain technology, granting stability but leaving the decentralization and trustlessness aspect untouched. Of course, there is much doubt whether the whole project will take off. Following the process described above is even harder than understanding it and thus horrid user experience could be a nail to the grave for the project. Moreover, the idea being quite fresh it is still doubted whether everything is secure and if it is just a matter of time for the malicious agents to find a loophole in the system and put it to ruin. The only safe choice right now is to wait.
 
 \section{Loan automation}
 
@@ -325,6 +332,14 @@ The second scenario uses notary who confirms the legal informations of a loan ta
 
 It is required that all of the processes composing the whole system will be carefully planned. This way any sort of high level misconfigurations can be pointed out and fixed. The processes in this work are presented using BPMN and are accompanied by short notes explaining more intricate concepts.
 
+The figure \ref{loan processing} gives us a glance over the whole life cycle of a loan. Starting with creation trough match of equivalent asks and bids, followed by regular transfer of funds and ended with eventual handling of going default. The loan is blocked as to not allow any possibility of loan giver draining the collateral funds from the deposit repeatedly. Only the sum left to be repaid should be granted to the loan giver.
+
+The figure \ref{loan taker} describes what type of actions will loan taker take during his participation in the loan processing process. At all times he is able to create new loan asks, cancel them, create new loans by querying the system to match the loan offers he can also repay the loans as he is supposed to do. New concept introduced here is that of a ledger. This entity will be described more thoroughly in the chapter \ref{architecture}. To give a quick explanation. Ledger is a point of storage of loan bids and asks. Every one can create their own ledger and give the ledger address to other users. Only loan offers on the same ledger can match.
+
+Just as for the loan taker the figure \ref{loan giver} describes what type of actions will be taken during the loan processing process. The only noticeable difference here is that the loan giver is not given a chance to repay loans instead he has the possibility to consume the repayments and eventually call for help in case of defaults.
+
+The last figure that is \ref{authority} explains to us what are the steps which one of the authorities stated as the collateral by loan taker will have to take. The steps have been already described precisely in the description of the authority users \ref{users}.
+
 \begin{figure}
 	\makebox[\textwidth][c]{
 		\includegraphics[scale=0.55]{\ImgPath/rys/loan_processing.pdf}
@@ -333,9 +348,8 @@ It is required that all of the processes composing the whole system will be care
 	\label{loan processing}
 \end{figure}
 
-The figure \ref{loan processing} gives us a glance over the whole life cycle of a loan. Starting with creation trough match of equivalent asks and bids, followed by regular transfer of funds and ended with eventual handling of going default. The loan is blocked as to not allow any possibility of loan giver draining the collateral funds from the deposit repeatedly. Only the sum left to be repaid should be granted to the loan giver.
 
-\begin{figure}[!htbp]
+\begin{figure}
 	\makebox[\textwidth][c]{
 		\includegraphics[scale=0.55]{\ImgPath/rys/loan_taker.pdf}
 	}%
@@ -343,11 +357,7 @@ The figure \ref{loan processing} gives us a glance over the whole life cycle of 
 	\label{loan taker}
 \end{figure}
 
-\newpage
-
-The figure \ref{loan taker} describes what type of actions will loan taker take during his participation in the loan processing process. At all times he is able to create new loan asks, cancel them, create new loans by querying the system to match the loan offers he can also repay the loans as he is supposed to do. New concept introduced here is that of a ledger. This entity will be described more thoroughly in the chapter \ref{architecture}. To give a quick explanation. Ledger is a point of storage of loan bids and asks. Every one can create their own ledger and give the ledger address to other users. Only loan offers on the same ledger can match.
-
-\begin{figure}[!htbp]
+\begin{figure}
 	\makebox[\textwidth][c]{
 		\includegraphics[scale=0.55]{\ImgPath/rys/loan_giver.pdf}
 	}%
@@ -355,12 +365,7 @@ The figure \ref{loan taker} describes what type of actions will loan taker take 
 	\label{loan giver}
 \end{figure}
 
-Just as for the loan taker the figure \ref{loan giver} describes what type of actions will be taken during the loan processing process. The only noticeable difference here is that the loan giver is not given a chance to repay loans instead he has the possibility to consume the repayments and eventually call for help in case of defaults.
-
-The last figure that is \ref{authority} explains to us what are the steps which one of the authorities stated as the collateral by loan taker will have to take. The steps have been already described precisely in the description of the authority users \ref{users}.
-
-
-\begin{figure}[!htbp]
+\begin{figure}
 	\makebox[\textwidth][c]{
 		\includegraphics[scale=0.55]{\ImgPath/rys/authority.pdf}
 	}%
@@ -604,13 +609,13 @@ contract('Ledger unit test', function(accounts){
 All of Exchange Engine and GUI components are written in Java. Being one of the most known languages in the world there will no remarks over the language itself. What this subchapter will concern are mostly the classes, their dependencies and the structures employed in the project.
 
 \begin{figure}[!htbp]
-	\begin{center}
-\centering
-\includegraphics[scale=0.4]{\ImgPath/rys/exchange_class.png}
-\end{center}
+	\makebox[\textwidth][c]{
+		\includegraphics[scale=0.4]{\ImgPath/rys/exchange_class.png}
+	}%
 	\caption{Simplified class diagram of the exchange engine}
 	\label{engine class}
 \end{figure}
+
 \newpage
 We start of with the class diagram of the Exchange component, that is figure \ref{engine class} . The whole component is a stand-alone application that starts a server servicing REST requests. For this purpose a Spring Boot framework has been employed. As such, the architecture seen above is mostly a pattern of using this framework. The diagram is simplified as it doesn't present Data Transport Objects(DTO) which are not important in a functional overview.
 
